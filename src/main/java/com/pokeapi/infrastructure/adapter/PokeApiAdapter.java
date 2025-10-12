@@ -10,9 +10,9 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.stream.Collectors;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import com.pokeapi.infrastructure.adapter.rest.dto.HeldItemWrapper;
 import com.pokeapi.infrastructure.adapter.rest.dto.HeldItemWrapper.ItemWrapper;
 import com.pokeapi.domain.model.HeldItem;
@@ -30,44 +30,45 @@ public class PokeApiAdapter implements PokemonRepository {
     }
 
     private List<HeldItem> mapHeldItems(List<HeldItemWrapper> wrappers) {
-        List<HeldItem> result = new ArrayList<>();
-        if (wrappers == null) return result;
-        for (HeldItemWrapper w : wrappers) {
-            HeldItem hi = new HeldItem();
-            if (w != null && w.getItem() != null) {
-                Item domainItem = Item.builder()
-                    .name(w.getItem().getName())
-                    .url(w.getItem().getUrl())
-                    .build();
-                hi.setItem(domainItem);
-            }
-            result.add(hi);
-        }
-        return result;
+        if (wrappers == null) return List.of();
+        return wrappers.stream()
+            .map(w -> {
+                var iw = (w == null) ? null : w.getItem();
+                var domainItem = (iw == null) ? null
+                    : Item.builder()
+                        .name(iw.getName())
+                        .url(iw.getUrl())
+                        .build();
+                return HeldItem.builder().item(domainItem).build();
+            })
+            .toList();
     }
 
     @Override
     public Pokemon findByName(String name) {
         try {
-            PokemonResponse response = restTemplate.getForObject(
+            var response = restTemplate.getForObject(
                 baseUrl + "/pokemon/{name}",
                 PokemonResponse.class,
                 name.toLowerCase()
             );
 
-            if (response == null) {
-                throw new PokemonNotFoundException(name);
-            }
+            var resp = Optional.ofNullable(response).orElseThrow(() -> new PokemonNotFoundException(name));
+
+            var id = Optional.ofNullable(resp.getId()).map(Integer::longValue).orElse(null);
+            var abilities = Optional.ofNullable(resp.getAbilities())
+                .stream()
+                .flatMap(List::stream)
+                .map(a -> a.getAbility().getName())
+                .toList();
 
             return Pokemon.builder()
-                .id(response.getId().longValue())
-                .name(response.getName())
-                .baseExperience(response.getBaseExperience())
-                .abilities(response.getAbilities().stream()
-                    .map(ability -> ability.getAbility().getName())
-                    .collect(Collectors.toList()))
-                .heldItems(mapHeldItems(response.getHeldItems()))
-                .locationAreaEncounters(response.getLocationAreaEncounters())
+                .id(id)
+                .name(resp.getName())
+                .baseExperience(resp.getBaseExperience())
+                .abilities(abilities)
+                .heldItems(mapHeldItems(resp.getHeldItems()))
+                .locationAreaEncounters(resp.getLocationAreaEncounters())
                 .build();
         } catch (HttpClientErrorException.NotFound e) {
             throw new PokemonNotFoundException(name);
