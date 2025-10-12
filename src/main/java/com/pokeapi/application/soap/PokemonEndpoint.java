@@ -24,6 +24,12 @@ public class PokemonEndpoint {
     private static final Logger log = LoggerFactory.getLogger(PokemonEndpoint.class);
     // Namespace definido en el XSD
     private static final String NAMESPACE_URI = "http://www.pokegateway.com/soap/gen";
+    // Fault constants
+    private static final String FAULT_TYPE_SERVER = "Server";
+    private static final String FAULT_TYPE_CLIENT = "Client";
+    private static final String CODE_INTERNAL_ERROR = "INTERNAL_ERROR";
+    private static final String MSG_UNEXPECTED_SERVER = "Unexpected server error";
+    private static final String CODE_EXTERNAL_SERVICE = "EXTERNAL_SERVICE_ERROR";
     private final PokemonService pokemonService;
 
     public PokemonEndpoint(PokemonService pokemonService) {
@@ -43,15 +49,15 @@ public class PokemonEndpoint {
             return null;
         } catch (ExternalServiceException ese) {
             log.warn("External service error while getting id for {}: {}", request.getName(), ese.getMessage());
-            buildSoapFault(messageContext, "Server", "EXTERNAL_SERVICE_ERROR", ese.getMessage());
+            buildSoapFault(messageContext, FAULT_TYPE_SERVER, CODE_EXTERNAL_SERVICE, ese.getMessage());
             return null;
         } catch (BusinessException be) {
             log.warn("Business exception: {}", be.getMessage());
-            buildSoapFault(messageContext, "Client", be.getCode(), be.getMessage());
+            buildSoapFault(messageContext, FAULT_TYPE_CLIENT, be.getCode(), be.getMessage());
             return null;
         } catch (Exception e) {
             log.error("Unexpected error in getId: {}", e.getMessage(), e);
-            buildSoapFault(messageContext, "Server", "INTERNAL_ERROR", "Unexpected server error");
+            buildSoapFault(messageContext, FAULT_TYPE_SERVER, CODE_INTERNAL_ERROR, MSG_UNEXPECTED_SERVER);
             return null;
         }
     }
@@ -65,7 +71,7 @@ public class PokemonEndpoint {
             return response;
         } catch (Exception e) {
             log.error("Error en getName: {}", e.getMessage(), e);
-            buildSoapFault(messageContext, "Server", "INTERNAL_ERROR", "Unexpected server error");
+            buildSoapFault(messageContext, FAULT_TYPE_SERVER, CODE_INTERNAL_ERROR, MSG_UNEXPECTED_SERVER);
             return null;
         }
     }
@@ -79,7 +85,7 @@ public class PokemonEndpoint {
             return response;
         } catch (Exception e) {
             log.error("Error en getBaseExperience: {}", e.getMessage(), e);
-            buildSoapFault(messageContext, "Server", "INTERNAL_ERROR", "Unexpected server error");
+            buildSoapFault(messageContext, FAULT_TYPE_SERVER, CODE_INTERNAL_ERROR, MSG_UNEXPECTED_SERVER);
             return null;
         }
     }
@@ -97,7 +103,7 @@ public class PokemonEndpoint {
             return response;
         } catch (Exception e) {
             log.error("Error en getAbilityNames: {}", e.getMessage(), e);
-            buildSoapFault(messageContext, "Server", "INTERNAL_ERROR", "Unexpected server error");
+            buildSoapFault(messageContext, FAULT_TYPE_SERVER, CODE_INTERNAL_ERROR, MSG_UNEXPECTED_SERVER);
             return null;
         }
     }
@@ -129,7 +135,7 @@ public class PokemonEndpoint {
             return response;
         } catch (Exception e) {
             log.error("Error en getHeldItems: {}", e.getMessage(), e);
-            buildSoapFault(messageContext, "Server", "INTERNAL_ERROR", "Unexpected server error");
+            buildSoapFault(messageContext, FAULT_TYPE_SERVER, CODE_INTERNAL_ERROR, MSG_UNEXPECTED_SERVER);
             return null;
         }
     }
@@ -143,7 +149,7 @@ public class PokemonEndpoint {
             return response;
         } catch (Exception e) {
             log.error("Error en getLocationAreaEncounters: {}", e.getMessage(), e);
-            buildSoapFault(messageContext, "Server", "INTERNAL_ERROR", "Unexpected server error");
+            buildSoapFault(messageContext, FAULT_TYPE_SERVER, CODE_INTERNAL_ERROR, MSG_UNEXPECTED_SERVER);
             return null;
         }
     }
