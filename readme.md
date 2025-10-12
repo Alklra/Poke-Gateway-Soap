@@ -1,6 +1,7 @@
 # PokeAPI SOAP Gateway
 
-**Estado Actual:** Hito 1/4: Configuración Base (Mínimo Viable en Progreso)
+**Versión Actual:** 0.1.1
+**Estado:** Hito 1/4: Configuración Base y Auditoría (Implementado)
 
 ## Resumen del Proyecto
 
@@ -73,19 +74,64 @@ curl --location 'http://localhost:8080/ws/pokemon-core' \
 
 ---
 
-## 4. Persistencia y Auditoría Mínima
+## 4. Verificación del Estado Actual (v0.1.1)
 
-En esta etapa, se ha configurado la base de datos H2 para guardar los logs de auditoría obligatorios.
+### 4.1. Puntos de Verificación Implementados
 
-- **Logs Persistidos:** IP de origen, Fecha/Hora y Método SOAP invocado.
+- [x] Servicio SOAP base funcionando
+- [x] Base de datos H2 configurada
+- [x] AOP para logging implementado
+- [x] Arquitectura Hexagonal base implementada
+- [x] Captura de IP en logs
+- [x] Medición de tiempos de respuesta
+
+### 4.2. Acceso a Herramientas de Monitoreo
+
 - **Consola H2:** `http://localhost:8080/h2-console`
+  - **JDBC URL:** `jdbc:h2:mem:testdb`
+  - **Usuario:** `sa`
+  - **Contraseña:** (dejar en blanco)
+- **Swagger UI:** `http://localhost:8080/swagger-ui.html`
+- **Actuator:** `http://localhost:8080/actuator`
+
+### 4.3. Pruebas Disponibles
+
+1. **Tests Unitarios:** 
+   ```bash
+   mvn test
+   ```
+
+2. **Tests de Integración con Cucumber:**
+   ```bash
+   mvn verify
+   ```
+
+3. **Verificación Manual del Endpoint SOAP:**
+   - Tiempo de arranque esperado: ~30 segundos
+   - Primera llamada puede tardar hasta 5 segundos (calentamiento)
+   - Llamadas subsecuentes deben responder en <1 segundo
+
+### 4.4. Métricas y Logs
+
+- Verificar logs de requests en tabla `REQUEST_LOG`
+- Revisar métricas de tiempo de respuesta en Actuator
+- Consultar trazas de IP y métodos invocados
 
 ---
 
 ## 🚧 Próximos Pasos (Transición a Etapa 2)
 
-La próxima etapa se centrará en:
+1. **Migración a OpenFeign** *(En Progreso)*
+   - Reemplazo de RestTemplate
+   - Configuración de timeouts
+   - Manejo de errores mejorado
 
-1.  **Migrar `RestTemplate` a OpenFeign**.
-2.  **Implementar Auditoría Completa usando AOP**.
-3.  **Implementar la suite de pruebas Cucumber y SonarQube**.
+2. **Resiliencia y Performance**
+   - Implementar Circuit Breaker
+   - Configurar Caffeine Cache
+   - Optimizar tiempos de arranque
+
+3. **Mejoras de Calidad**
+   - Coverage con SonarQube
+   - Ampliación de scenarios Cucumber
+   - Documentación OpenAPI completa
