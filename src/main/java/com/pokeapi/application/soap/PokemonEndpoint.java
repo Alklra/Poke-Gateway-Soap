@@ -1,15 +1,29 @@
 package com.pokeapi.application.soap;
 
 import com.pokeapi.domain.service.PokemonService;
+import com.pokeapi.domain.model.HeldItem;
 import com.pokeapi.application.soap.generated.*;
+import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.ws.server.endpoint.annotation.Endpoint;
 import org.springframework.ws.server.endpoint.annotation.PayloadRoot;
 import org.springframework.ws.server.endpoint.annotation.RequestPayload;
 import org.springframework.ws.server.endpoint.annotation.ResponsePayload;
+import org.springframework.ws.context.MessageContext;
+import org.springframework.ws.soap.saaj.SaajSoapMessage;
+import jakarta.xml.soap.SOAPFault;
+import javax.xml.namespace.QName;
+import com.pokeapi.domain.exception.BusinessException;
+import com.pokeapi.domain.exception.ExternalServiceException;
+import com.pokeapi.domain.exception.PokemonNotFoundException;
+
 
 @Endpoint
 public class PokemonEndpoint {
-    private static final String NAMESPACE_URI = "http://localhost:8080/pokeapi/soap";
+    private static final Logger log = LoggerFactory.getLogger(PokemonEndpoint.class);
+    // Namespace definido en el XSD
+    private static final String NAMESPACE_URI = "http://www.pokegateway.com/soap/gen";
     private final PokemonService pokemonService;
 
     public PokemonEndpoint(PokemonService pokemonService) {
@@ -18,51 +32,140 @@ public class PokemonEndpoint {
 
     @PayloadRoot(namespace = NAMESPACE_URI, localPart = "getIdRequest")
     @ResponsePayload
-    public GetIdResponse getId(@RequestPayload GetIdRequest request) {
-        GetIdResponse response = new GetIdResponse();
-        response.setId(pokemonService.getId(request.getName()));
-        return response;
+    public GetIdResponse getId(@RequestPayload GetIdRequest request, MessageContext messageContext) {
+        try {
+            GetIdResponse response = new GetIdResponse();
+            response.setId(pokemonService.getId(request.getName()));
+            return response;
+        } catch (PokemonNotFoundException pnfe) {
+            log.info("Pokemon not found: {}", request.getName());
+            buildSoapFault(messageContext, "Client", pnfe.getCode(), pnfe.getMessage());
+            return null;
+        } catch (ExternalServiceException ese) {
+            log.warn("External service error while getting id for {}: {}", request.getName(), ese.getMessage());
+            buildSoapFault(messageContext, "Server", "EXTERNAL_SERVICE_ERROR", ese.getMessage());
+            return null;
+        } catch (BusinessException be) {
+            log.warn("Business exception: {}", be.getMessage());
+            buildSoapFault(messageContext, "Client", be.getCode(), be.getMessage());
+            return null;
+        } catch (Exception e) {
+            log.error("Unexpected error in getId: {}", e.getMessage(), e);
+            buildSoapFault(messageContext, "Server", "INTERNAL_ERROR", "Unexpected server error");
+            return null;
+        }
     }
 
     @PayloadRoot(namespace = NAMESPACE_URI, localPart = "getNameRequest")
     @ResponsePayload
-    public GetNameResponse getName(@RequestPayload GetNameRequest request) {
-        GetNameResponse response = new GetNameResponse();
-        response.setName(pokemonService.getName(request.getName()));
-        return response;
+    public GetNameResponse getName(@RequestPayload GetNameRequest request, MessageContext messageContext) {
+        try {
+            GetNameResponse response = new GetNameResponse();
+            response.setName(pokemonService.getName(request.getName()));
+            return response;
+        } catch (Exception e) {
+            log.error("Error en getName: {}", e.getMessage(), e);
+            buildSoapFault(messageContext, "Server", "INTERNAL_ERROR", "Unexpected server error");
+            return null;
+        }
     }
 
     @PayloadRoot(namespace = NAMESPACE_URI, localPart = "getBaseExperienceRequest")
     @ResponsePayload
-    public GetBaseExperienceResponse getBaseExperience(@RequestPayload GetBaseExperienceRequest request) {
-        GetBaseExperienceResponse response = new GetBaseExperienceResponse();
-        response.setBaseExperience(pokemonService.getBaseExperience(request.getName()));
-        return response;
+    public GetBaseExperienceResponse getBaseExperience(@RequestPayload GetBaseExperienceRequest request, MessageContext messageContext) {
+        try {
+            GetBaseExperienceResponse response = new GetBaseExperienceResponse();
+            response.setBaseExperience(pokemonService.getBaseExperience(request.getName()));
+            return response;
+        } catch (Exception e) {
+            log.error("Error en getBaseExperience: {}", e.getMessage(), e);
+            buildSoapFault(messageContext, "Server", "INTERNAL_ERROR", "Unexpected server error");
+            return null;
+        }
     }
 
-    @PayloadRoot(namespace = NAMESPACE_URI, localPart = "getHeightRequest")
-    @ResponsePayload
-    public GetHeightResponse getHeight(@RequestPayload GetHeightRequest request) {
-        GetHeightResponse response = new GetHeightResponse();
-        response.setHeight(pokemonService.getHeight(request.getName()));
-        return response;
-    }
-
+    /** CORRECCIÓN: Se renombran las clases y localPart de 'getAbilities' a 'getAbilityNames'
+     * para coincidir con el XSD limpio. */
     @PayloadRoot(namespace = NAMESPACE_URI, localPart = "getAbilityNamesRequest")
     @ResponsePayload
-    public GetAbilityNamesResponse getAbilityNames(@RequestPayload GetAbilityNamesRequest request) {
-        GetAbilityNamesResponse response = new GetAbilityNamesResponse();
-        response.setAbilities(new Abilities());
-        response.getAbilities().getAbility().addAll(pokemonService.getAbilityNames(request.getName()));
-        return response;
+    public GetAbilityNamesResponse getAbilityNames(@RequestPayload GetAbilityNamesRequest request, MessageContext messageContext) { // <-- Clases renombradas
+        try {
+            GetAbilityNamesResponse response = new GetAbilityNamesResponse();
+            // La lógica de inicialización para la lista es correcta
+            response.setAbilities(new Abilities());
+            response.getAbilities().getAbility().addAll(pokemonService.getAbilities(request.getName()));
+            return response;
+        } catch (Exception e) {
+            log.error("Error en getAbilityNames: {}", e.getMessage(), e);
+            buildSoapFault(messageContext, "Server", "INTERNAL_ERROR", "Unexpected server error");
+            return null;
+        }
     }
 
-    @PayloadRoot(namespace = NAMESPACE_URI, localPart = "getStatBaseValuesRequest")
+    @PayloadRoot(namespace = NAMESPACE_URI, localPart = "getHeldItemsRequest")
     @ResponsePayload
-    public GetStatBaseValuesResponse getStatBaseValues(@RequestPayload GetStatBaseValuesRequest request) {
-        GetStatBaseValuesResponse response = new GetStatBaseValuesResponse();
-        response.setStats(new Stats());
-        response.getStats().getBaseStat().addAll(pokemonService.getStatBaseValues(request.getName()));
-        return response;
+    public GetHeldItemsResponse getHeldItems(@RequestPayload GetHeldItemsRequest request, MessageContext messageContext) {
+        try {
+            GetHeldItemsResponse response = new GetHeldItemsResponse();
+            // Convert domain HeldItem list to generated HeldItems using streams (Java 21+ style)
+            var genHeldItems = new HeldItems();
+            var domainHeld = pokemonService.getHeldItems(request.getName());
+            if (domainHeld != null) {
+                domainHeld.stream()
+                    .map(dh -> {
+                        var gh = new com.pokeapi.application.soap.generated.HeldItem();
+                        var gi = new com.pokeapi.application.soap.generated.Item();
+                        var di = dh.getItem();
+                        if (di != null) {
+                            gi.setName(di.getName());
+                            gi.setUrl(di.getUrl());
+                        }
+                        gh.setItem(gi);
+                        return gh;
+                    })
+                    .forEach(genHeldItems.getHeldItem()::add);
+            }
+            response.setHeldItems(genHeldItems);
+            return response;
+        } catch (Exception e) {
+            log.error("Error en getHeldItems: {}", e.getMessage(), e);
+            buildSoapFault(messageContext, "Server", "INTERNAL_ERROR", "Unexpected server error");
+            return null;
+        }
+    }
+
+    @PayloadRoot(namespace = NAMESPACE_URI, localPart = "getLocationAreaEncountersRequest")
+    @ResponsePayload
+    public GetLocationAreaEncountersResponse getLocationAreaEncounters(@RequestPayload GetLocationAreaEncountersRequest request, MessageContext messageContext) {
+        try {
+            GetLocationAreaEncountersResponse response = new GetLocationAreaEncountersResponse();
+            response.setLocationAreaEncounters(pokemonService.getLocationAreaEncounters(request.getName()));
+            return response;
+        } catch (Exception e) {
+            log.error("Error en getLocationAreaEncounters: {}", e.getMessage(), e);
+            buildSoapFault(messageContext, "Server", "INTERNAL_ERROR", "Unexpected server error");
+            return null;
+        }
+    }
+
+    // Helper para construir un SOAP Fault en la respuesta.
+    private void buildSoapFault(MessageContext messageContext, String faultType, String code, String message) {
+        try {
+            var response = messageContext.getResponse();
+            if (response instanceof SaajSoapMessage) {
+                SaajSoapMessage saaj = (SaajSoapMessage) response;
+                SOAPFault fault = saaj.getSaajMessage().getSOAPBody().addFault();
+                // Usar namespace SOAP 1.1 por compatibilidad
+                QName faultCode = new QName("http://schemas.xmlsoap.org/soap/envelope/", faultType);
+                fault.setFaultCode(faultCode);
+                // Incluir código de negocio y mensaje
+                String text = String.format("%s: %s - %s", code, message, faultType);
+                fault.setFaultString(text);
+            } else {
+                log.warn("Respuesta no es SaajSoapMessage, no se puede construir SOAP Fault");
+            }
+        } catch (Exception e) {
+            log.error("Error construyendo SoapFault: {}", e.getMessage(), e);
+        }
     }
 }
