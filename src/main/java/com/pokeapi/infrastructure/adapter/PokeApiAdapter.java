@@ -11,6 +11,12 @@ import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
 import java.util.stream.Collectors;
+import java.util.ArrayList;
+import java.util.List;
+import com.pokeapi.infrastructure.adapter.rest.dto.HeldItemWrapper;
+import com.pokeapi.infrastructure.adapter.rest.dto.HeldItemWrapper.ItemWrapper;
+import com.pokeapi.domain.model.HeldItem;
+import com.pokeapi.domain.model.Item;
 
 @Component
 public class PokeApiAdapter implements PokemonRepository {
@@ -21,6 +27,23 @@ public class PokeApiAdapter implements PokemonRepository {
     public PokeApiAdapter(RestTemplate restTemplate, @Value("${pokeapi.base-url}") String baseUrl) {
         this.restTemplate = restTemplate;
         this.baseUrl = baseUrl;
+    }
+
+    private List<HeldItem> mapHeldItems(List<HeldItemWrapper> wrappers) {
+        List<HeldItem> result = new ArrayList<>();
+        if (wrappers == null) return result;
+        for (HeldItemWrapper w : wrappers) {
+            HeldItem hi = new HeldItem();
+            if (w != null && w.getItem() != null) {
+                Item domainItem = Item.builder()
+                    .name(w.getItem().getName())
+                    .url(w.getItem().getUrl())
+                    .build();
+                hi.setItem(domainItem);
+            }
+            result.add(hi);
+        }
+        return result;
     }
 
     @Override
@@ -36,18 +59,16 @@ public class PokeApiAdapter implements PokemonRepository {
                 throw new PokemonNotFoundException(name);
             }
 
-            return new Pokemon(
-                response.getId(),
-                response.getName(),
-                response.getBaseExperience(),
-                response.getHeight(),
-                response.getAbilities().stream()
+            return Pokemon.builder()
+                .id(response.getId().longValue())
+                .name(response.getName())
+                .baseExperience(response.getBaseExperience())
+                .abilities(response.getAbilities().stream()
                     .map(ability -> ability.getAbility().getName())
-                    .collect(Collectors.toList()),
-                response.getStats().stream()
-                    .map(PokemonResponse.StatWrapper::getBaseStat)
-                    .collect(Collectors.toList())
-            );
+                    .collect(Collectors.toList()))
+                .heldItems(mapHeldItems(response.getHeldItems()))
+                .locationAreaEncounters(response.getLocationAreaEncounters())
+                .build();
         } catch (HttpClientErrorException.NotFound e) {
             throw new PokemonNotFoundException(name);
         } catch (Exception e) {

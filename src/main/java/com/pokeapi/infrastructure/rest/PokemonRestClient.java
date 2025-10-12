@@ -5,7 +5,11 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
 
 import com.pokeapi.domain.model.Pokemon;
+import com.pokeapi.domain.model.HeldItem;
+import com.pokeapi.domain.model.Item;
 import com.fasterxml.jackson.databind.JsonNode;
+import java.util.ArrayList;
+import java.util.List;
 
 @Component
 public class PokemonRestClient {
@@ -30,23 +34,31 @@ public class PokemonRestClient {
             return null;
         }
         
-        Pokemon pokemon = new Pokemon();
-        pokemon.setId(node.path("id").asLong());
-        pokemon.setName(node.path("name").asText());
-        pokemon.setBaseExperience(node.path("base_experience").asInt());
-        pokemon.setHeight(node.path("height").asInt());
-        pokemon.setWeight(node.path("weight").asInt());
-        
         // Extraer habilidades
-        StringBuilder abilities = new StringBuilder();
+        List<String> abilities = new ArrayList<>();
         node.path("abilities").forEach(ability -> {
-            if (abilities.length() > 0) {
-                abilities.append(", ");
-            }
-            abilities.append(ability.path("ability").path("name").asText());
+            abilities.add(ability.path("ability").path("name").asText());
         });
-        pokemon.setAbilities(abilities.toString());
-        
-        return pokemon;
+
+        // Extraer held items
+        List<HeldItem> heldItems = new ArrayList<>();
+        node.path("held_items").forEach(heldItemNode -> {
+            HeldItem heldItem = HeldItem.builder()
+                .item(Item.builder()
+                    .name(heldItemNode.path("item").path("name").asText())
+                    .url(heldItemNode.path("item").path("url").asText())
+                    .build())
+                .build();
+            heldItems.add(heldItem);
+        });
+
+        return Pokemon.builder()
+            .id(node.path("id").asLong())
+            .name(node.path("name").asText())
+            .abilities(abilities)
+            .baseExperience(node.path("base_experience").asInt())
+            .heldItems(heldItems)
+            .locationAreaEncounters(node.path("location_area_encounters").asText())
+            .build();
     }
 }
