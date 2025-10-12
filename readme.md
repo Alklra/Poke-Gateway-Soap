@@ -1,6 +1,6 @@
 # PokeAPI SOAP Gateway
 
-**Versión Actual:** 0.2.0
+**Versión Actual:** 1.0.0
 **Estado:** MVP Completado - Primera Etapa Finalizada (6/6 Hitos)
 
 Para instrucciones detalladas de pruebas end-to-end, consultar:
