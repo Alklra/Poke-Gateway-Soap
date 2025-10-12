@@ -25,7 +25,7 @@ import jakarta.xml.bind.annotation.XmlType;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;sequence&gt;
- *         &lt;element name="name" type="{http://www.w3.org/2001/XMLSchema}string"/&gt;
+ *         &lt;element name="locationAreaEncounters" type="{http://www.w3.org/2001/XMLSchema}string"/&gt;
  *       &lt;/sequence&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
@@ -36,36 +36,36 @@ import jakarta.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
-    "name"
+    "locationAreaEncounters"
 })
-@XmlRootElement(name = "getIdRequest")
-public class GetIdRequest {
+@XmlRootElement(name = "getLocationAreaEncountersResponse")
+public class GetLocationAreaEncountersResponse {
 
     @XmlElement(required = true)
-    protected String name;
+    protected String locationAreaEncounters;
 
     /**
-     * Obtiene el valor de la propiedad name.
+     * Obtiene el valor de la propiedad locationAreaEncounters.
      * 
      * @return
      *     possible object is
      *     {@link String }
      *     
      */
-    public String getName() {
-        return name;
+    public String getLocationAreaEncounters() {
+        return locationAreaEncounters;
     }
 
     /**
-     * Define el valor de la propiedad name.
+     * Define el valor de la propiedad locationAreaEncounters.
      * 
      * @param value
      *     allowed object is
      *     {@link String }
      *     
      */
-    public void setName(String value) {
-        this.name = value;
+    public void setLocationAreaEncounters(String value) {
+        this.locationAreaEncounters = value;
     }
 
 }

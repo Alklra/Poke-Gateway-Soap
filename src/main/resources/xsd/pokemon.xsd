@@ -1,10 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
-           xmlns:tns="http://localhost:8080/pokeapi/soap"
-           targetNamespace="http://localhost:8080/pokeapi/soap"
+           xmlns:tns="http://www.pokegateway.com/soap/gen"
+           targetNamespace="http://www.pokegateway.com/soap/gen"
            elementFormDefault="qualified">
 
-    <!-- getId -->
     <xs:element name="getIdRequest">
         <xs:complexType>
             <xs:sequence>
@@ -12,16 +11,14 @@
             </xs:sequence>
         </xs:complexType>
     </xs:element>
-    
     <xs:element name="getIdResponse">
         <xs:complexType>
             <xs:sequence>
-                <xs:element name="id" type="xs:int"/>
+                <xs:element name="id" type="xs:long"/>
             </xs:sequence>
         </xs:complexType>
     </xs:element>
 
-    <!-- getName -->
     <xs:element name="getNameRequest">
         <xs:complexType>
             <xs:sequence>
@@ -29,7 +26,6 @@
             </xs:sequence>
         </xs:complexType>
     </xs:element>
-    
     <xs:element name="getNameResponse">
         <xs:complexType>
             <xs:sequence>
@@ -38,7 +34,6 @@
         </xs:complexType>
     </xs:element>
 
-    <!-- getBaseExperience -->
     <xs:element name="getBaseExperienceRequest">
         <xs:complexType>
             <xs:sequence>
@@ -46,7 +41,6 @@
             </xs:sequence>
         </xs:complexType>
     </xs:element>
-    
     <xs:element name="getBaseExperienceResponse">
         <xs:complexType>
             <xs:sequence>
@@ -55,7 +49,6 @@
         </xs:complexType>
     </xs:element>
 
-    <!-- getHeight -->
     <xs:element name="getHeightRequest">
         <xs:complexType>
             <xs:sequence>
@@ -63,7 +56,6 @@
             </xs:sequence>
         </xs:complexType>
     </xs:element>
-    
     <xs:element name="getHeightResponse">
         <xs:complexType>
             <xs:sequence>
@@ -72,7 +64,6 @@
         </xs:complexType>
     </xs:element>
 
-    <!-- getAbilityNames -->
     <xs:element name="getAbilityNamesRequest">
         <xs:complexType>
             <xs:sequence>
@@ -80,11 +71,55 @@
             </xs:sequence>
         </xs:complexType>
     </xs:element>
-    
     <xs:element name="getAbilityNamesResponse">
         <xs:complexType>
             <xs:sequence>
                 <xs:element name="abilities" type="tns:abilities"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="getStatBaseValuesRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="name" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="getStatBaseValuesResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="stats" type="tns:stats"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="getHeldItemsRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="name" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="getHeldItemsResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="heldItems" type="tns:heldItems"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+
+    <xs:element name="getLocationAreaEncountersRequest">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="name" type="xs:string"/>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+    <xs:element name="getLocationAreaEncountersResponse">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="locationAreaEncounters" type="xs:string"/>
             </xs:sequence>
         </xs:complexType>
     </xs:element>
@@ -95,26 +130,28 @@
         </xs:sequence>
     </xs:complexType>
 
-    <!-- getStatBaseValues -->
-    <xs:element name="getStatBaseValuesRequest">
-        <xs:complexType>
-            <xs:sequence>
-                <xs:element name="name" type="xs:string"/>
-            </xs:sequence>
-        </xs:complexType>
-    </xs:element>
-    
-    <xs:element name="getStatBaseValuesResponse">
-        <xs:complexType>
-            <xs:sequence>
-                <xs:element name="stats" type="tns:stats"/>
-            </xs:sequence>
-        </xs:complexType>
-    </xs:element>
-
     <xs:complexType name="stats">
         <xs:sequence>
             <xs:element name="baseStat" type="xs:int" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="heldItems">
+        <xs:sequence>
+            <xs:element name="heldItem" type="tns:heldItem" maxOccurs="unbounded"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="heldItem">
+        <xs:sequence>
+            <xs:element name="item" type="tns:item"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <xs:complexType name="item">
+        <xs:sequence>
+            <xs:element name="name" type="xs:string"/>
+            <xs:element name="url" type="xs:string"/>
         </xs:sequence>
     </xs:complexType>
 

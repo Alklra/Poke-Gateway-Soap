@@ -38,8 +38,8 @@ import jakarta.xml.bind.annotation.XmlType;
 @XmlType(name = "", propOrder = {
     "name"
 })
-@XmlRootElement(name = "getIdRequest")
-public class GetIdRequest {
+@XmlRootElement(name = "getLocationAreaEncountersRequest")
+public class GetLocationAreaEncountersRequest {
 
     @XmlElement(required = true)
     protected String name;

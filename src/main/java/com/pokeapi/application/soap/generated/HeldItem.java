@@ -11,21 +11,20 @@ package com.pokeapi.application.soap.generated;
 import jakarta.xml.bind.annotation.XmlAccessType;
 import jakarta.xml.bind.annotation.XmlAccessorType;
 import jakarta.xml.bind.annotation.XmlElement;
-import jakarta.xml.bind.annotation.XmlRootElement;
 import jakarta.xml.bind.annotation.XmlType;
 
 
 /**
- * <p>Clase Java para anonymous complex type.
+ * <p>Clase Java para heldItem complex type.
  * 
  * <p>El siguiente fragmento de esquema especifica el contenido que se espera que haya en esta clase.
  * 
  * <pre>
- * &lt;complexType&gt;
+ * &lt;complexType name="heldItem"&gt;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;sequence&gt;
- *         &lt;element name="name" type="{http://www.w3.org/2001/XMLSchema}string"/&gt;
+ *         &lt;element name="item" type="{http://www.pokegateway.com/soap/gen}item"/&gt;
  *       &lt;/sequence&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
@@ -35,37 +34,36 @@ import jakarta.xml.bind.annotation.XmlType;
  * 
  */
 @XmlAccessorType(XmlAccessType.FIELD)
-@XmlType(name = "", propOrder = {
-    "name"
+@XmlType(name = "heldItem", propOrder = {
+    "item"
 })
-@XmlRootElement(name = "getIdRequest")
-public class GetIdRequest {
+public class HeldItem {
 
     @XmlElement(required = true)
-    protected String name;
+    protected Item item;
 
     /**
-     * Obtiene el valor de la propiedad name.
+     * Obtiene el valor de la propiedad item.
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link Item }
      *     
      */
-    public String getName() {
-        return name;
+    public Item getItem() {
+        return item;
     }
 
     /**
-     * Define el valor de la propiedad name.
+     * Define el valor de la propiedad item.
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link Item }
      *     
      */
-    public void setName(String value) {
-        this.name = value;
+    public void setItem(Item value) {
+        this.item = value;
     }
 
 }

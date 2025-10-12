@@ -25,7 +25,7 @@ import jakarta.xml.bind.annotation.XmlType;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;sequence&gt;
- *         &lt;element name="name" type="{http://www.w3.org/2001/XMLSchema}string"/&gt;
+ *         &lt;element name="heldItems" type="{http://www.pokegateway.com/soap/gen}heldItems"/&gt;
  *       &lt;/sequence&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
@@ -36,36 +36,36 @@ import jakarta.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
-    "name"
+    "heldItems"
 })
-@XmlRootElement(name = "getIdRequest")
-public class GetIdRequest {
+@XmlRootElement(name = "getHeldItemsResponse")
+public class GetHeldItemsResponse {
 
     @XmlElement(required = true)
-    protected String name;
+    protected HeldItems heldItems;
 
     /**
-     * Obtiene el valor de la propiedad name.
+     * Obtiene el valor de la propiedad heldItems.
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link HeldItems }
      *     
      */
-    public String getName() {
-        return name;
+    public HeldItems getHeldItems() {
+        return heldItems;
     }
 
     /**
-     * Define el valor de la propiedad name.
+     * Define el valor de la propiedad heldItems.
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link HeldItems }
      *     
      */
-    public void setName(String value) {
-        this.name = value;
+    public void setHeldItems(HeldItems value) {
+        this.heldItems = value;
     }
 
 }
