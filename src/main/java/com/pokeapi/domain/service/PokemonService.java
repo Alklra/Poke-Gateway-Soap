@@ -1,6 +1,7 @@
 package com.pokeapi.domain.service;
 
 import com.pokeapi.domain.model.Pokemon;
+import com.pokeapi.domain.model.HeldItem;
 import com.pokeapi.domain.port.PokemonRepository;
 import org.springframework.stereotype.Service;
 
@@ -14,7 +15,7 @@ public class PokemonService {
         this.pokemonRepository = pokemonRepository;
     }
 
-    public Integer getId(String name) {
+    public Long getId(String name) {
         return pokemonRepository.findByName(name).getId();
     }
 
@@ -26,15 +27,15 @@ public class PokemonService {
         return pokemonRepository.findByName(name).getBaseExperience();
     }
 
-    public Integer getHeight(String name) {
-        return pokemonRepository.findByName(name).getHeight();
+    public List<String> getAbilities(String name) {
+        return pokemonRepository.findByName(name).getAbilities();
     }
 
-    public List<String> getAbilityNames(String name) {
-        return pokemonRepository.findByName(name).getAbilityNames();
+    public List<HeldItem> getHeldItems(String name) {
+        return pokemonRepository.findByName(name).getHeldItems();
     }
 
-    public List<Integer> getStatBaseValues(String name) {
-        return pokemonRepository.findByName(name).getStatBaseValues();
+    public String getLocationAreaEncounters(String name) {
+        return pokemonRepository.findByName(name).getLocationAreaEncounters();
     }
 }

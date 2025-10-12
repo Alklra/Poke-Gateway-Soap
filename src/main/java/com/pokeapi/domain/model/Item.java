@@ -1,6 +1,5 @@
 package com.pokeapi.domain.model;
 
-import java.util.List;
 import lombok.Data;
 import lombok.Builder;
 import lombok.NoArgsConstructor;
@@ -10,11 +9,7 @@ import lombok.AllArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class Pokemon {
-    private Long id;
+public class Item {
     private String name;
-    private List<String> abilities;
-    private Integer baseExperience;
-    private List<HeldItem> heldItems;
-    private String locationAreaEncounters;
+    private String url;
 }
