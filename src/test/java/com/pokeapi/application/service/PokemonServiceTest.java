@@ -58,4 +58,77 @@ class PokemonServiceTest {
         assertNotNull(held);
         assertEquals(1, held.size());
     }
+
+    // from PokemonServiceExtraTest - simple sanity cases
+    @Test
+    void getIdWhenRepositoryNullReturnsNull() {
+        when(repository.findByName(anyString())).thenReturn(null);
+        var id = service.getId("nope");
+        assertNull(id);
+    }
+
+    @Test
+    void getAbilitiesWhenRepositoryNullReturnsEmpty() {
+        when(repository.findByName(anyString())).thenReturn(null);
+        var abilities = service.getAbilities("nope");
+        assertTrue(abilities == null || abilities.isEmpty());
+    }
+
+    // Extra targeted tests (7)
+    @Test
+    void getIdWhenRepositoryThrowsHandled() {
+        when(repository.findByName(anyString())).thenThrow(new RuntimeException("db"));
+        assertThrows(RuntimeException.class, () -> service.getId("x"));
+    }
+
+    @Test
+    void getAbilitiesWhenEmptyList() {
+        var p = Pokemon.builder().id(1L).name("n").abilities(List.of()).build();
+        when(repository.findByName("n")).thenReturn(p);
+        var a = service.getAbilities("n");
+        assertTrue(a.isEmpty());
+    }
+
+    @Test
+    void getHeldItemsWhenRepositoryThrows() {
+        when(repository.findByName(anyString())).thenThrow(new RuntimeException("db"));
+        assertThrows(RuntimeException.class, () -> service.getHeldItems("x"));
+    }
+
+    @Test
+    void getHeldItemsWhenEmpty() {
+        var p = Pokemon.builder().id(1L).name("n").heldItems(List.of()).build();
+        when(repository.findByName("n")).thenReturn(p);
+        var h = service.getHeldItems("n");
+        assertTrue(h.isEmpty());
+    }
+
+    @Test
+    void getAbilitiesNullNameHandled() {
+        assertThrows(IllegalArgumentException.class, () -> service.getAbilities(null));
+    }
+
+    @Test
+    void getHeldItemsNullNameHandled() {
+        assertThrows(IllegalArgumentException.class, () -> service.getHeldItems(null));
+    }
+
+    @Test
+    void getIdNullNameHandled() {
+        assertThrows(IllegalArgumentException.class, () -> service.getId(null));
+    }
+
+    @Test
+    void getNameReturnsValue() {
+        var p = Pokemon.builder().id(2L).name("nm").build();
+        when(repository.findByName("nm")).thenReturn(p);
+        assertEquals("nm", service.getName("nm"));
+    }
+
+    @Test
+    void getBaseExperienceReturnsInt() {
+        var p = Pokemon.builder().id(3L).name("be").baseExperience(7).build();
+        when(repository.findByName("be")).thenReturn(p);
+        assertEquals(7, service.getBaseExperience("be"));
+    }
 }
