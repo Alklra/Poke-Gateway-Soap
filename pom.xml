@@ -12,7 +12,7 @@
 
     <groupId>com.pokegateway</groupId>
     <artifactId>poke-soap-gateway</artifactId>
-    <version>0.0.1</version>
+    <version>1.2.7</version>
     <name>poke-soap-gateway</name>
     <description>SOAP Gateway para consumir la PokeAPI con Resiliencia y Caching</description>
 
@@ -212,6 +212,32 @@
                     <clearOutputDir>false</clearOutputDir>
                     <packageName>com.pokeapi.application.soap.generated</packageName>
                 </configuration>
+            </plugin>
+            <!-- JaCoCo plugin para reporte de cobertura -->
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>0.8.10</version>
+                <configuration>
+                    <!-- Excluir paquetes generados (JAXB) para medir cobertura solo del código escrito a mano -->
+                    <excludes>
+                        <exclude>com/pokeapi/application/soap/generated/**</exclude>
+                    </excludes>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                    </execution>
+                    <execution>
+                        <id>report</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

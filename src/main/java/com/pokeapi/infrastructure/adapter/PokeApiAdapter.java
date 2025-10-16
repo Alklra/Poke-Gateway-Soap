@@ -10,8 +10,8 @@ import org.springframework.stereotype.Component;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestTemplate;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.ArrayList;
 import java.util.Optional;
 import com.pokeapi.infrastructure.adapter.rest.dto.HeldItemWrapper;
 import com.pokeapi.infrastructure.adapter.rest.dto.HeldItemWrapper.ItemWrapper;
@@ -46,21 +46,27 @@ public class PokeApiAdapter implements PokemonRepository {
 
     @Override
     public Pokemon findByName(String name) {
+        if (name == null) {
+            throw new IllegalArgumentException("name must not be null");
+        }
         try {
             var response = restTemplate.getForObject(
                 baseUrl + "/pokemon/{name}",
                 PokemonResponse.class,
-                name.toLowerCase()
+                name.trim().toLowerCase()
             );
 
             var resp = Optional.ofNullable(response).orElseThrow(() -> new PokemonNotFoundException(name));
 
             var id = Optional.ofNullable(resp.getId()).map(Integer::longValue).orElse(null);
-            var abilities = Optional.ofNullable(resp.getAbilities())
-                .stream()
-                .flatMap(List::stream)
-                .map(a -> a.getAbility().getName())
-                .toList();
+            List<String> abilities = new ArrayList<>();
+            if (resp.getAbilities() != null) {
+                for (var aw : resp.getAbilities()) {
+                    if (aw != null && aw.getAbility() != null && aw.getAbility().getName() != null) {
+                        abilities.add(aw.getAbility().getName());
+                    }
+                }
+            }
 
             return Pokemon.builder()
                 .id(id)
