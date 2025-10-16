@@ -10,7 +10,7 @@ import lombok.AllArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 public class Ability {
-    private AbilityDetail ability;
-    private boolean is_hidden;
+    private AbilityDetail abilityDetail;
+    private boolean hidden;
     private Integer slot;
 }

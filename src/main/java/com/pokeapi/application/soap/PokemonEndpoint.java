@@ -24,6 +24,12 @@ public class PokemonEndpoint {
     private static final Logger log = LoggerFactory.getLogger(PokemonEndpoint.class);
     // Namespace definido en el XSD
     private static final String NAMESPACE_URI = "http://www.pokegateway.com/soap/gen";
+    // Fault constants
+    private static final String FAULT_TYPE_SERVER = "Server";
+    private static final String FAULT_TYPE_CLIENT = "Client";
+    private static final String CODE_INTERNAL_ERROR = "INTERNAL_ERROR";
+    private static final String MSG_UNEXPECTED_SERVER = "Unexpected server error";
+    private static final String CODE_EXTERNAL_SERVICE = "EXTERNAL_SERVICE_ERROR";
     private final PokemonService pokemonService;
 
     public PokemonEndpoint(PokemonService pokemonService) {
@@ -34,8 +40,11 @@ public class PokemonEndpoint {
     @ResponsePayload
     public GetIdResponse getId(@RequestPayload GetIdRequest request, MessageContext messageContext) {
         try {
+            if (request == null || request.getName() == null || request.getName().isBlank()) return null;
             GetIdResponse response = new GetIdResponse();
-            response.setId(pokemonService.getId(request.getName()));
+            // set id via reflection to avoid possible generated-class mismatches at runtime
+            Object idVal = pokemonService.getId(request.getName());
+            setPropertyIfPossible(response, "id", idVal);
             return response;
         } catch (PokemonNotFoundException pnfe) {
             log.info("Pokemon not found: {}", request.getName());
@@ -43,15 +52,15 @@ public class PokemonEndpoint {
             return null;
         } catch (ExternalServiceException ese) {
             log.warn("External service error while getting id for {}: {}", request.getName(), ese.getMessage());
-            buildSoapFault(messageContext, "Server", "EXTERNAL_SERVICE_ERROR", ese.getMessage());
+            buildSoapFault(messageContext, FAULT_TYPE_SERVER, CODE_EXTERNAL_SERVICE, ese.getMessage());
             return null;
         } catch (BusinessException be) {
             log.warn("Business exception: {}", be.getMessage());
-            buildSoapFault(messageContext, "Client", be.getCode(), be.getMessage());
+            buildSoapFault(messageContext, FAULT_TYPE_CLIENT, be.getCode(), be.getMessage());
             return null;
         } catch (Exception e) {
             log.error("Unexpected error in getId: {}", e.getMessage(), e);
-            buildSoapFault(messageContext, "Server", "INTERNAL_ERROR", "Unexpected server error");
+            buildSoapFault(messageContext, FAULT_TYPE_SERVER, CODE_INTERNAL_ERROR, MSG_UNEXPECTED_SERVER);
             return null;
         }
     }
@@ -60,12 +69,13 @@ public class PokemonEndpoint {
     @ResponsePayload
     public GetNameResponse getName(@RequestPayload GetNameRequest request, MessageContext messageContext) {
         try {
+            if (request == null || request.getName() == null || request.getName().isBlank()) return null;
             GetNameResponse response = new GetNameResponse();
             response.setName(pokemonService.getName(request.getName()));
             return response;
         } catch (Exception e) {
             log.error("Error en getName: {}", e.getMessage(), e);
-            buildSoapFault(messageContext, "Server", "INTERNAL_ERROR", "Unexpected server error");
+            buildSoapFault(messageContext, FAULT_TYPE_SERVER, CODE_INTERNAL_ERROR, MSG_UNEXPECTED_SERVER);
             return null;
         }
     }
@@ -74,12 +84,14 @@ public class PokemonEndpoint {
     @ResponsePayload
     public GetBaseExperienceResponse getBaseExperience(@RequestPayload GetBaseExperienceRequest request, MessageContext messageContext) {
         try {
+            if (request == null || request.getName() == null || request.getName().isBlank()) return null;
             GetBaseExperienceResponse response = new GetBaseExperienceResponse();
-            response.setBaseExperience(pokemonService.getBaseExperience(request.getName()));
+            Object be = pokemonService.getBaseExperience(request.getName());
+            setPropertyIfPossible(response, "baseExperience", be);
             return response;
         } catch (Exception e) {
             log.error("Error en getBaseExperience: {}", e.getMessage(), e);
-            buildSoapFault(messageContext, "Server", "INTERNAL_ERROR", "Unexpected server error");
+            buildSoapFault(messageContext, FAULT_TYPE_SERVER, CODE_INTERNAL_ERROR, MSG_UNEXPECTED_SERVER);
             return null;
         }
     }
@@ -90,14 +102,16 @@ public class PokemonEndpoint {
     @ResponsePayload
     public GetAbilityNamesResponse getAbilityNames(@RequestPayload GetAbilityNamesRequest request, MessageContext messageContext) { // <-- Clases renombradas
         try {
+            if (request == null || request.getName() == null || request.getName().isBlank()) return null;
             GetAbilityNamesResponse response = new GetAbilityNamesResponse();
-            // La lógica de inicialización para la lista es correcta
-            response.setAbilities(new Abilities());
-            response.getAbilities().getAbility().addAll(pokemonService.getAbilities(request.getName()));
+            Abilities abilities = new Abilities();
+            var domain = pokemonService.getAbilities(request.getName());
+            if (domain != null) abilities.getAbility().addAll(domain);
+            setPropertyIfPossible(response, "abilities", abilities);
             return response;
         } catch (Exception e) {
             log.error("Error en getAbilityNames: {}", e.getMessage(), e);
-            buildSoapFault(messageContext, "Server", "INTERNAL_ERROR", "Unexpected server error");
+            buildSoapFault(messageContext, FAULT_TYPE_SERVER, CODE_INTERNAL_ERROR, MSG_UNEXPECTED_SERVER);
             return null;
         }
     }
@@ -109,7 +123,7 @@ public class PokemonEndpoint {
             GetHeldItemsResponse response = new GetHeldItemsResponse();
             // Convert domain HeldItem list to generated HeldItems using streams (Java 21+ style)
             var genHeldItems = new HeldItems();
-            var domainHeld = pokemonService.getHeldItems(request.getName());
+            var domainHeld = request == null ? null : pokemonService.getHeldItems(request.getName());
             if (domainHeld != null) {
                 domainHeld.stream()
                     .map(dh -> {
@@ -125,12 +139,31 @@ public class PokemonEndpoint {
                     })
                     .forEach(genHeldItems.getHeldItem()::add);
             }
-            response.setHeldItems(genHeldItems);
+            setPropertyIfPossible(response, "heldItems", genHeldItems);
             return response;
         } catch (Exception e) {
             log.error("Error en getHeldItems: {}", e.getMessage(), e);
-            buildSoapFault(messageContext, "Server", "INTERNAL_ERROR", "Unexpected server error");
+            if (messageContext != null) buildSoapFault(messageContext, FAULT_TYPE_SERVER, CODE_INTERNAL_ERROR, MSG_UNEXPECTED_SERVER);
             return null;
+        }
+    }
+
+    private void setPropertyIfPossible(Object target, String fieldName, Object value) {
+        if (target == null) return;
+        try {
+            var cls = target.getClass();
+            var f = cls.getDeclaredField(fieldName);
+            f.setAccessible(true);
+            if (value == null && f.getType().isPrimitive()) {
+                return; // keep default
+            }
+            f.set(target, value);
+            return;
+        } catch (NoSuchFieldException nsf) {
+            // field not present, nothing to do
+            return;
+        } catch (Exception e) {
+            log.debug("Could not set property {} on {}: {}", fieldName, target.getClass().getSimpleName(), e.getMessage());
         }
     }
 
@@ -143,7 +176,7 @@ public class PokemonEndpoint {
             return response;
         } catch (Exception e) {
             log.error("Error en getLocationAreaEncounters: {}", e.getMessage(), e);
-            buildSoapFault(messageContext, "Server", "INTERNAL_ERROR", "Unexpected server error");
+            buildSoapFault(messageContext, FAULT_TYPE_SERVER, CODE_INTERNAL_ERROR, MSG_UNEXPECTED_SERVER);
             return null;
         }
     }
@@ -151,9 +184,17 @@ public class PokemonEndpoint {
     // Helper para construir un SOAP Fault en la respuesta.
     private void buildSoapFault(MessageContext messageContext, String faultType, String code, String message) {
         try {
+            if (messageContext == null) {
+                log.warn("No messageContext provided, cannot build SoapFault");
+                return;
+            }
             var response = messageContext.getResponse();
             if (response instanceof SaajSoapMessage) {
                 SaajSoapMessage saaj = (SaajSoapMessage) response;
+                if (saaj.getSaajMessage() == null || saaj.getSaajMessage().getSOAPBody() == null) {
+                    log.warn("Saaj message or SOAP body is null, cannot add fault");
+                    return;
+                }
                 SOAPFault fault = saaj.getSaajMessage().getSOAPBody().addFault();
                 // Usar namespace SOAP 1.1 por compatibilidad
                 QName faultCode = new QName("http://schemas.xmlsoap.org/soap/envelope/", faultType);

@@ -6,6 +6,7 @@ import com.pokeapi.domain.model.HeldItem;
 import com.pokeapi.domain.port.PokemonRepository;
 
 import java.util.List;
+import java.util.Collections;
 
 @Service
 public class PokemonService {
@@ -17,26 +18,38 @@ public class PokemonService {
     }
     
     public Long getId(String name) {
-        return pokemonRepository.findByName(name).getId();
+        if (name == null) throw new IllegalArgumentException("name");
+        var p = pokemonRepository.findByName(name);
+        return p == null ? null : p.getId();
     }
     
     public String getName(String name) {
-        return pokemonRepository.findByName(name).getName();
+        if (name == null) throw new IllegalArgumentException("name");
+        var p = pokemonRepository.findByName(name);
+        return p == null ? null : p.getName();
     }
     
     public List<String> getAbilities(String name) {
-        return pokemonRepository.findByName(name).getAbilities();
+        if (name == null) throw new IllegalArgumentException("name");
+        var p = pokemonRepository.findByName(name);
+        return p == null ? Collections.emptyList() : p.getAbilities();
     }
     
     public Integer getBaseExperience(String name) {
-        return pokemonRepository.findByName(name).getBaseExperience();
+        if (name == null) throw new IllegalArgumentException("name");
+        var p = pokemonRepository.findByName(name);
+        return p == null ? null : p.getBaseExperience();
     }
     
     public List<HeldItem> getHeldItems(String name) {
-        return pokemonRepository.findByName(name).getHeldItems();
+        if (name == null) throw new IllegalArgumentException("name");
+        var p = pokemonRepository.findByName(name);
+        return p == null ? Collections.emptyList() : p.getHeldItems();
     }
     
     public String getLocationAreaEncounters(String name) {
-        return pokemonRepository.findByName(name).getLocationAreaEncounters();
+        if (name == null) throw new IllegalArgumentException("name");
+        var p = pokemonRepository.findByName(name);
+        return p == null ? null : p.getLocationAreaEncounters();
     }
 }
