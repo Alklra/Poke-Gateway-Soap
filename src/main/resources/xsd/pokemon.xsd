@@ -44,7 +44,7 @@
     <xs:element name="getBaseExperienceResponse">
         <xs:complexType>
             <xs:sequence>
-                <xs:element name="baseExperience" type="xs:int"/>
+                <xs:element name="base_experience" type="xs:int"/>
             </xs:sequence>
         </xs:complexType>
     </xs:element>
@@ -104,7 +104,7 @@
     <xs:element name="getHeldItemsResponse">
         <xs:complexType>
             <xs:sequence>
-                <xs:element name="heldItems" type="tns:heldItems"/>
+                <xs:element name="held_items" type="tns:heldItems"/>
             </xs:sequence>
         </xs:complexType>
     </xs:element>
@@ -119,7 +119,7 @@
     <xs:element name="getLocationAreaEncountersResponse">
         <xs:complexType>
             <xs:sequence>
-                <xs:element name="locationAreaEncounters" type="xs:string"/>
+                <xs:element name="location_area_encounters" type="tns:locationAreas"/>
             </xs:sequence>
         </xs:complexType>
     </xs:element>
@@ -132,13 +132,13 @@
 
     <xs:complexType name="stats">
         <xs:sequence>
-            <xs:element name="baseStat" type="xs:int" maxOccurs="unbounded"/>
+            <xs:element name="base_stat" type="xs:int" maxOccurs="unbounded"/>
         </xs:sequence>
     </xs:complexType>
 
     <xs:complexType name="heldItems">
         <xs:sequence>
-            <xs:element name="heldItem" type="tns:heldItem" maxOccurs="unbounded"/>
+            <xs:element name="held_item" type="tns:heldItem" maxOccurs="unbounded"/>
         </xs:sequence>
     </xs:complexType>
 
@@ -152,6 +152,20 @@
         <xs:sequence>
             <xs:element name="name" type="xs:string"/>
             <xs:element name="url" type="xs:string"/>
+        </xs:sequence>
+    </xs:complexType>
+
+    <!-- New complex type to represent a list of location areas returned by the PokeAPI encounter endpoint -->
+    <xs:complexType name="locationAreas">
+        <xs:sequence>
+            <xs:element name="location_area" maxOccurs="unbounded">
+                <xs:complexType>
+                    <xs:sequence>
+                        <xs:element name="name" type="xs:string"/>
+                        <xs:element name="url" type="xs:string"/>
+                    </xs:sequence>
+                </xs:complexType>
+            </xs:element>
         </xs:sequence>
     </xs:complexType>
 

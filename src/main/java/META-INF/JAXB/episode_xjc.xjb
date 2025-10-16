@@ -5,54 +5,78 @@
 Este archivo ha sido generado por Eclipse Implementation of JAXB v3.0.0 
 Visite https://eclipse-ee4j.github.io/jaxb-ri 
 Todas las modificaciones realizadas en este archivo se perderán si se vuelve a compilar el esquema de origen. 
-Generado el: 2025.10.11 a las 11:02:29 AM CST 
+Generado el: 2025.10.16 a las 07:26:45 AM CST 
 
   -->
-  <bindings scd="x-schema::tns" xmlns:tns="http://pokegateway.com/soap/gen">
+  <bindings scd="x-schema::tns" xmlns:tns="http://www.pokegateway.com/soap/gen">
     <schemaBindings map="false">
-      <package name="com.pokegateway.soap.gen"/>
+      <package name="com.pokeapi.application.soap.generated"/>
     </schemaBindings>
-    <bindings scd="tns:getAbilitiesRequest">
-      <class ref="com.pokegateway.soap.gen.GetAbilitiesRequest"/>
-    </bindings>
-    <bindings scd="tns:getAbilitiesResponse">
-      <class ref="com.pokegateway.soap.gen.GetAbilitiesResponse"/>
-    </bindings>
-    <bindings scd="~tns:ability">
-      <class ref="com.pokegateway.soap.gen.Ability"/>
-    </bindings>
-    <bindings scd="tns:getBaseExperienceRequest">
-      <class ref="com.pokegateway.soap.gen.GetBaseExperienceRequest"/>
-    </bindings>
-    <bindings scd="tns:getBaseExperienceResponse">
-      <class ref="com.pokegateway.soap.gen.GetBaseExperienceResponse"/>
-    </bindings>
-    <bindings scd="tns:getHeldItemsRequest">
-      <class ref="com.pokegateway.soap.gen.GetHeldItemsRequest"/>
-    </bindings>
-    <bindings scd="tns:getHeldItemsResponse">
-      <class ref="com.pokegateway.soap.gen.GetHeldItemsResponse"/>
-    </bindings>
-    <bindings scd="~tns:item">
-      <class ref="com.pokegateway.soap.gen.Item"/>
+    <bindings scd="~tns:locationAreas">
+      <class ref="com.pokeapi.application.soap.generated.LocationAreas"/>
     </bindings>
     <bindings scd="tns:getIdRequest">
-      <class ref="com.pokegateway.soap.gen.GetIdRequest"/>
+      <class ref="com.pokeapi.application.soap.generated.GetIdRequest"/>
     </bindings>
     <bindings scd="tns:getIdResponse">
-      <class ref="com.pokegateway.soap.gen.GetIdResponse"/>
+      <class ref="com.pokeapi.application.soap.generated.GetIdResponse"/>
     </bindings>
     <bindings scd="tns:getNameRequest">
-      <class ref="com.pokegateway.soap.gen.GetNameRequest"/>
+      <class ref="com.pokeapi.application.soap.generated.GetNameRequest"/>
     </bindings>
     <bindings scd="tns:getNameResponse">
-      <class ref="com.pokegateway.soap.gen.GetNameResponse"/>
+      <class ref="com.pokeapi.application.soap.generated.GetNameResponse"/>
+    </bindings>
+    <bindings scd="tns:getBaseExperienceRequest">
+      <class ref="com.pokeapi.application.soap.generated.GetBaseExperienceRequest"/>
+    </bindings>
+    <bindings scd="tns:getBaseExperienceResponse">
+      <class ref="com.pokeapi.application.soap.generated.GetBaseExperienceResponse"/>
+    </bindings>
+    <bindings scd="tns:getHeightRequest">
+      <class ref="com.pokeapi.application.soap.generated.GetHeightRequest"/>
+    </bindings>
+    <bindings scd="tns:getHeightResponse">
+      <class ref="com.pokeapi.application.soap.generated.GetHeightResponse"/>
+    </bindings>
+    <bindings scd="tns:getAbilityNamesRequest">
+      <class ref="com.pokeapi.application.soap.generated.GetAbilityNamesRequest"/>
+    </bindings>
+    <bindings scd="tns:getAbilityNamesResponse">
+      <class ref="com.pokeapi.application.soap.generated.GetAbilityNamesResponse"/>
+    </bindings>
+    <bindings scd="~tns:abilities">
+      <class ref="com.pokeapi.application.soap.generated.Abilities"/>
+    </bindings>
+    <bindings scd="tns:getStatBaseValuesRequest">
+      <class ref="com.pokeapi.application.soap.generated.GetStatBaseValuesRequest"/>
+    </bindings>
+    <bindings scd="tns:getStatBaseValuesResponse">
+      <class ref="com.pokeapi.application.soap.generated.GetStatBaseValuesResponse"/>
+    </bindings>
+    <bindings scd="~tns:stats">
+      <class ref="com.pokeapi.application.soap.generated.Stats"/>
+    </bindings>
+    <bindings scd="tns:getHeldItemsRequest">
+      <class ref="com.pokeapi.application.soap.generated.GetHeldItemsRequest"/>
+    </bindings>
+    <bindings scd="tns:getHeldItemsResponse">
+      <class ref="com.pokeapi.application.soap.generated.GetHeldItemsResponse"/>
+    </bindings>
+    <bindings scd="~tns:heldItems">
+      <class ref="com.pokeapi.application.soap.generated.HeldItems"/>
     </bindings>
     <bindings scd="tns:getLocationAreaEncountersRequest">
-      <class ref="com.pokegateway.soap.gen.GetLocationAreaEncountersRequest"/>
+      <class ref="com.pokeapi.application.soap.generated.GetLocationAreaEncountersRequest"/>
     </bindings>
     <bindings scd="tns:getLocationAreaEncountersResponse">
-      <class ref="com.pokegateway.soap.gen.GetLocationAreaEncountersResponse"/>
+      <class ref="com.pokeapi.application.soap.generated.GetLocationAreaEncountersResponse"/>
+    </bindings>
+    <bindings scd="~tns:heldItem">
+      <class ref="com.pokeapi.application.soap.generated.HeldItem"/>
+    </bindings>
+    <bindings scd="~tns:item">
+      <class ref="com.pokeapi.application.soap.generated.Item"/>
     </bindings>
   </bindings>
 </bindings>
