@@ -103,10 +103,10 @@ class PokemonEndpointTest {
         var req = new com.pokeapi.application.soap.generated.GetHeldItemsRequest();
         req.setName("bulbasaur");
 
-        var resp = endpoint.getHeldItems(req, null);
-        assertNotNull(resp);
-        assertNotNull(resp.getHeldItems());
-        assertEquals(1, resp.getHeldItems().size());
+    var resp = endpoint.getHeldItems(req, null);
+    assertNotNull(resp);
+    assertNotNull(resp.getHeldItems());
+    assertEquals(1, resp.getHeldItems().getHeldItem().size());
     }
 
     @Test
@@ -173,9 +173,10 @@ class PokemonEndpointTest {
         when(service.getAbilities("a")).thenReturn(java.util.List.of("one","two"));
         var req = new com.pokeapi.application.soap.generated.GetAbilityNamesRequest();
         req.setName("a");
-        var resp = endpoint.getAbilityNames(req, null);
-        assertNotNull(resp);
-        assertEquals(2, resp.getAbilityNames().size());
+    var resp = endpoint.getAbilityNames(req, null);
+    assertNotNull(resp);
+    assertNotNull(resp.getAbilities());
+    assertEquals(2, resp.getAbilities().getAbility().size());
     }
 
     @Test
@@ -183,8 +184,8 @@ class PokemonEndpointTest {
         when(service.getAbilities("e")).thenReturn(java.util.List.of());
         var req = new com.pokeapi.application.soap.generated.GetAbilityNamesRequest();
         req.setName("e");
-        var resp = endpoint.getAbilityNames(req, null);
-        assertNotNull(resp);
+    var resp = endpoint.getAbilityNames(req, null);
+    assertNotNull(resp);
     }
 
     @Test
@@ -297,19 +298,20 @@ class PokemonEndpointTest {
     void getAbilityNamesHandlesSingle() {
         when(service.getAbilities("s")).thenReturn(java.util.List.of("only"));
         var req = new com.pokeapi.application.soap.generated.GetAbilityNamesRequest(); req.setName("s");
-        var resp = endpoint.getAbilityNames(req, null);
-        assertNotNull(resp);
-        assertEquals(1, resp.getAbilityNames().size());
+    var resp = endpoint.getAbilityNames(req, null);
+    assertNotNull(resp);
+    assertNotNull(resp.getAbilities());
+    assertEquals(1, resp.getAbilities().getAbility().size());
     }
 
     @Test
     void getHeldItemsHandlesEmptyDomainList() {
         when(service.getHeldItems("x")).thenReturn(java.util.List.of());
         var req = new com.pokeapi.application.soap.generated.GetHeldItemsRequest(); req.setName("x");
-        var resp = endpoint.getHeldItems(req, null);
-        assertNotNull(resp);
-        // Adjusted: generated response exposes a list via getHeldItems()
-        assertEquals(0, resp.getHeldItems().size());
+    var resp = endpoint.getHeldItems(req, null);
+    assertNotNull(resp);
+    assertNotNull(resp.getHeldItems());
+    assertEquals(0, resp.getHeldItems().getHeldItem().size());
     }
 
     @Test

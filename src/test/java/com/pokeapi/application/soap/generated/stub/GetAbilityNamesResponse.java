@@ -1,4 +1,4 @@
-package com.pokeapi.application.soap.generated;
+package com.pokeapi.application.soap.generated.stub;
 
 import java.util.ArrayList;
 import java.util.List;

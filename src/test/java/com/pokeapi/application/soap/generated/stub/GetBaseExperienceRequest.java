@@ -1,4 +1,4 @@
-package com.pokeapi.application.soap.generated;
+package com.pokeapi.application.soap.generated.stub;
 
 public class GetBaseExperienceRequest {
     private String name;

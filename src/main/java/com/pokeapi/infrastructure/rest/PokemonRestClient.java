@@ -32,7 +32,10 @@ public class PokemonRestClient {
     }
 
     public Pokemon getPokemonByName(String name) {
-        var lower = name == null ? "" : name.toLowerCase();
+        if (name == null) {
+            throw new IllegalArgumentException("name must not be null");
+        }
+        var lower = name.toLowerCase();
         String url = baseUrl + "/pokemon/" + lower;
         log.info("Se solicita a PokeAPI el pokemon: {} -> URL: {}", name, url);
         JsonNode response;
@@ -74,21 +77,40 @@ public class PokemonRestClient {
         if (node == null) {
             return null;
         }
+        // Treat an empty JSON object as malformed response
+        if (node.isObject() && node.size() == 0) {
+            throw new ExternalServiceException("PokeAPI", "Empty JSON object");
+        }
         // Extraer habilidades usando streams
-        var abilities = node.path("abilities")
-            .findValues("ability").stream()
-            .map(n -> n.path("name").asText())
-            .toList();
+        // abilities may contain wrappers or missing names; map safely to List<String>
+        var abilityNodes = node.path("abilities");
+        List<String> abilities = new ArrayList<>();
+        if (abilityNodes != null && abilityNodes.isArray()) {
+            for (var an : abilityNodes) {
+                var abilityNode = an.path("ability");
+                if (abilityNode != null && abilityNode.hasNonNull("name")) {
+                    abilities.add(abilityNode.path("name").asText());
+                }
+            }
+        }
 
         // Extraer held items con estilo funcional
-        var heldItems = node.path("held_items").findValues("item").stream()
-            .map(itemNode -> HeldItem.builder()
-                .item(Item.builder()
-                    .name(itemNode.path("name").asText())
-                    .url(itemNode.path("url").asText())
-                    .build())
-                .build())
-            .toList();
+        List<HeldItem> heldItems = new ArrayList<>();
+        var heldNodes = node.path("held_items");
+        if (heldNodes != null && heldNodes.isArray()) {
+            for (var hn : heldNodes) {
+                var itemNode = hn.path("item");
+                if (itemNode != null && !itemNode.isNull()) {
+                    var domainItem = Item.builder()
+                        .name(itemNode.path("name").asText(null))
+                        .url(itemNode.path("url").asText(null))
+                        .build();
+                    heldItems.add(HeldItem.builder().item(domainItem).build());
+                } else {
+                    heldItems.add(HeldItem.builder().item(null).build());
+                }
+            }
+        }
 
         var location = Optional.ofNullable(node.path("location_area_encounters").asText(null)).orElse("");
 
