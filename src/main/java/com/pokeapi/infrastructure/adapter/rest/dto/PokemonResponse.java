@@ -8,9 +8,9 @@ public class PokemonResponse {
     private Integer id;
     private String name;
     private Integer baseExperience;
-    private Integer height;
     private List<AbilityWrapper> abilities;
-    private List<StatWrapper> stats;
+    private List<HeldItemWrapper> heldItems;
+    private String locationAreaEncounters;
 
     // Getters and Setters
     public Integer getId() {
@@ -37,12 +37,20 @@ public class PokemonResponse {
         this.baseExperience = baseExperience;
     }
 
-    public Integer getHeight() {
-        return height;
+    public List<HeldItemWrapper> getHeldItems() {
+        return heldItems;
     }
 
-    public void setHeight(Integer height) {
-        this.height = height;
+    public void setHeldItems(List<HeldItemWrapper> heldItems) {
+        this.heldItems = heldItems;
+    }
+
+    public String getLocationAreaEncounters() {
+        return locationAreaEncounters;
+    }
+
+    public void setLocationAreaEncounters(String locationAreaEncounters) {
+        this.locationAreaEncounters = locationAreaEncounters;
     }
 
     public List<AbilityWrapper> getAbilities() {
@@ -53,13 +61,7 @@ public class PokemonResponse {
         this.abilities = abilities;
     }
 
-    public List<StatWrapper> getStats() {
-        return stats;
-    }
-
-    public void setStats(List<StatWrapper> stats) {
-        this.stats = stats;
-    }
+    // stats removed from response DTO (not used)
 
     @JsonIgnoreProperties(ignoreUnknown = true)
     public static class AbilityWrapper {

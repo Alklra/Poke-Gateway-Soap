@@ -1,7 +1,10 @@
 # PokeAPI SOAP Gateway
 
-**Versión Actual:** 0.1.1
-**Estado:** Hito 1/4: Configuración Base y Auditoría (Implementado)
+**Versión Actual:** 1.2.7
+**Estado:** MVP Completado - Primera Etapa Finalizada (6/6 Hitos)
+
+Para instrucciones detalladas de pruebas end-to-end, consultar:
+[Guía de Pruebas SOAP](./Documentacion/guia-pruebas-soap.md)
 
 ## Resumen del Proyecto
 
