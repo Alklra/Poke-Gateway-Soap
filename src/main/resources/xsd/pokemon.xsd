@@ -89,7 +89,7 @@
     <xs:element name="getStatBaseValuesResponse">
         <xs:complexType>
             <xs:sequence>
-                <xs:element name="stats" type="tns:stats"/>
+                <xs:element name="base_experience" type="tns:stats"/>
             </xs:sequence>
         </xs:complexType>
     </xs:element>

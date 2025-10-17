@@ -136,6 +136,7 @@ public class PokemonRestClient {
         if (encountersUrl == null || encountersUrl.isBlank()) return List.of();
         JsonNode resp;
         try {
+            log.info("Fetching location areas from {}", encountersUrl);
             resp = restTemplate.getForObject(encountersUrl, JsonNode.class);
         } catch (HttpClientErrorException.NotFound nf) {
             log.info("Encounters endpoint not found: {}", encountersUrl);
@@ -158,6 +159,7 @@ public class PokemonRestClient {
             if (name == null && url == null) continue;
             out.add(new LocationAreaDto(name == null ? "" : name, url == null ? "" : url));
         }
+        log.info("Parsed {} location areas from {}", out.size(), encountersUrl);
         return out;
     }
 }

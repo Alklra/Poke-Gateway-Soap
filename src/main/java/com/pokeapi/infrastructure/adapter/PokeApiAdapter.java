@@ -13,6 +13,10 @@ import org.springframework.web.client.RestTemplate;
 import java.util.List;
 import java.util.ArrayList;
 import java.util.Optional;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+
 import com.pokeapi.infrastructure.adapter.rest.dto.HeldItemWrapper;
 import com.pokeapi.infrastructure.adapter.rest.dto.HeldItemWrapper.ItemWrapper;
 import com.pokeapi.domain.model.HeldItem;
@@ -23,6 +27,7 @@ public class PokeApiAdapter implements PokemonRepository {
     
     private final RestTemplate restTemplate;
     private final String baseUrl;
+    private static final Logger log = LoggerFactory.getLogger(PokeApiAdapter.class);
 
     public PokeApiAdapter(RestTemplate restTemplate, @Value("${pokeapi.base-url}") String baseUrl) {
         this.restTemplate = restTemplate;
@@ -50,11 +55,24 @@ public class PokeApiAdapter implements PokemonRepository {
             throw new IllegalArgumentException("name must not be null");
         }
         try {
-            var response = restTemplate.getForObject(
-                baseUrl + "/pokemon/{name}",
-                PokemonResponse.class,
-                name.trim().toLowerCase()
-            );
+            String url = baseUrl + "/pokemon/" + name.trim().toLowerCase();
+            var response = restTemplate.getForObject(url, PokemonResponse.class);
+            // log the request and a small snippet of the response
+            try {
+                var snip = response == null ? "null" : (response.getName() + " id=" + response.getId());
+                log.info("PokeApiAdapter GET {} -> {}", url, snip);
+            } catch (Exception ex) {
+                log.debug("Could not build response snippet for logging: {}", ex.getMessage());
+            }
+
+            // additional debug: show how many held_items and the encounters URL (if present)
+            try {
+                int heldCount = response == null || response.getHeldItems() == null ? 0 : response.getHeldItems().size();
+                String encountersUrl = response == null ? null : response.getLocationAreaEncounters();
+                log.info("PokeApiAdapter: held_items count = {} , location_area_encounters = {}", heldCount, encountersUrl);
+            } catch (Exception ex) {
+                log.debug("Could not build held items / encounters logging: {}", ex.getMessage());
+            }
 
             var resp = Optional.ofNullable(response).orElseThrow(() -> new PokemonNotFoundException(name));
 
@@ -71,7 +89,7 @@ public class PokeApiAdapter implements PokemonRepository {
             return Pokemon.builder()
                 .id(id)
                 .name(resp.getName())
-                .baseExperience(resp.getBaseExperience())
+                .baseExperience(resp.getBaseExperience()) // Allow null values
                 .abilities(abilities)
                 .heldItems(mapHeldItems(resp.getHeldItems()))
                 .locationAreaEncounters(resp.getLocationAreaEncounters())

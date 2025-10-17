@@ -5,6 +5,7 @@ import com.pokeapi.domain.model.HeldItem;
 
 import com.pokeapi.application.soap.generated.*;
 import com.pokeapi.application.soap.generated.LocationAreas.LocationArea;
+
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -16,6 +17,7 @@ import org.springframework.ws.context.MessageContext;
 import org.springframework.ws.soap.saaj.SaajSoapMessage;
 import jakarta.xml.soap.SOAPFault;
 import javax.xml.namespace.QName;
+
 import com.pokeapi.domain.exception.BusinessException;
 import com.pokeapi.domain.exception.ExternalServiceException;
 import com.pokeapi.domain.exception.PokemonNotFoundException;
@@ -89,6 +91,7 @@ public class PokemonEndpoint {
             if (request == null || request.getName() == null || request.getName().isBlank()) return null;
             GetBaseExperienceResponse response = new GetBaseExperienceResponse();
             Object be = pokemonService.getBaseExperience(request.getName());
+            log.info("Base experience for {}: {}", request.getName(), be);
             setPropertyIfPossible(response, "baseExperience", be);
             return response;
         } catch (Exception e) {
@@ -126,20 +129,19 @@ public class PokemonEndpoint {
             // Convert domain HeldItem list to generated HeldItems using streams (Java 21+ style)
             var genHeldItems = new HeldItems();
             var domainHeld = request == null ? null : pokemonService.getHeldItems(request.getName());
+            log.info("Held items for {}: {} entries - {}", request.getName(), (domainHeld == null ? 0 : domainHeld.size()), (domainHeld == null ? "[]" : domainHeld.toString()));
             if (domainHeld != null) {
-                domainHeld.stream()
-                    .map(dh -> {
-                        var gh = new com.pokeapi.application.soap.generated.HeldItem();
-                        var gi = new com.pokeapi.application.soap.generated.Item();
-                        var di = dh.getItem();
-                        if (di != null) {
-                            gi.setName(di.getName());
-                            gi.setUrl(di.getUrl());
-                        }
-                        gh.setItem(gi);
-                        return gh;
-                    })
-                    .forEach(genHeldItems.getHeldItem()::add);
+                for (var dh : domainHeld) {
+                    com.pokeapi.application.soap.generated.HeldItem gh = new com.pokeapi.application.soap.generated.HeldItem();
+                    com.pokeapi.application.soap.generated.Item gi = new com.pokeapi.application.soap.generated.Item();
+                    var di = dh.getItem();
+                    if (di != null) {
+                        gi.setName(di.getName());
+                        gi.setUrl(di.getUrl());
+                    }
+                    gh.setItem(gi);
+                    genHeldItems.getHeldItem().add(gh);
+                }
             }
             setPropertyIfPossible(response, "heldItems", genHeldItems);
             return response;
@@ -175,6 +177,7 @@ public class PokemonEndpoint {
         try {
             GetLocationAreaEncountersResponse response = new GetLocationAreaEncountersResponse();
             var list = pokemonService.getLocationAreas(request.getName());
+            log.info("Location areas for {}: {} entries - {}", request.getName(), (list == null ? 0 : list.size()), (list == null ? "[]" : list.toString()));
             // construir LocationAreas directamente usando las clases generadas
             LocationAreas locAreas = new LocationAreas();
             if (list != null) {
