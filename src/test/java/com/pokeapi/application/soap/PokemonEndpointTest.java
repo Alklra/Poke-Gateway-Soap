@@ -6,7 +6,7 @@ import static org.mockito.Mockito.*;
 import com.pokeapi.application.soap.generated.GetIdRequest;
 import com.pokeapi.application.soap.generated.GetIdResponse;
 import com.pokeapi.domain.exception.PokemonNotFoundException;
-import com.pokeapi.domain.service.PokemonService;
+import com.pokeapi.application.service.PokemonService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;

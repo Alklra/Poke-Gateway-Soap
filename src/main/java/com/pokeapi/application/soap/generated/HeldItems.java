@@ -2,7 +2,7 @@
 // Este archivo ha sido generado por Eclipse Implementation of JAXB v3.0.0 
 // Visite https://eclipse-ee4j.github.io/jaxb-ri 
 // Todas las modificaciones realizadas en este archivo se perderán si se vuelve a compilar el esquema de origen. 
-// Generado el: 2025.10.16 a las 12:26:52 AM CST 
+// Generado el: 2025.10.17 a las 05:45:20 AM CST 
 //
 
 
@@ -26,7 +26,7 @@ import jakarta.xml.bind.annotation.XmlType;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;sequence&gt;
- *         &lt;element name="heldItem" type="{http://www.pokegateway.com/soap/gen}heldItem" maxOccurs="unbounded"/&gt;
+ *         &lt;element name="held_item" type="{http://www.pokegateway.com/soap/gen}heldItem" maxOccurs="unbounded"/&gt;
  *       &lt;/sequence&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
@@ -41,7 +41,7 @@ import jakarta.xml.bind.annotation.XmlType;
 })
 public class HeldItems {
 
-    @XmlElement(required = true)
+    @XmlElement(name = "held_item", required = true)
     protected List<HeldItem> heldItem;
 
     /**
