@@ -1,3 +1,4 @@
+
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
@@ -12,7 +13,7 @@
 
     <groupId>com.pokegateway</groupId>
     <artifactId>poke-soap-gateway</artifactId>
-    <version>1.3.0</version>
+    <version>1.3.3</version>
     <name>poke-soap-gateway</name>
     <description>SOAP Gateway para consumir la PokeAPI con Resiliencia y Caching</description>
 
@@ -219,9 +220,21 @@
                 <artifactId>jacoco-maven-plugin</artifactId>
                 <version>0.8.10</version>
                 <configuration>
-                    <!-- Excluir paquetes generados (JAXB) para medir cobertura solo del código escrito a mano -->
+                    <!-- Excluir paquetes no relevantes para la cobertura de lógica de negocio -->
                     <excludes>
+                        <!-- JAXB generated classes -->
                         <exclude>com/pokeapi/application/soap/generated/**</exclude>
+                        <!-- Application layer (controllers/endpoints/config that are not core logic) -->
+                        <exclude>com/pokeapi/PokeApiApplication.class</exclude>
+                        <!-- Domain model POJOs (getters/setters) -->
+                        <exclude>com/pokeapi/domain/model/**</exclude>
+                        <!-- Domain exceptions -->
+                        <exclude>com/pokeapi/domain/exception/**</exclude>
+                        <!-- DTOs used for REST mapping -->
+                        <exclude>com/pokeapi/infrastructure/adapter/rest/dto/**</exclude>
+                        <exclude>com/pokeapi/infrastructure/config/**</exclude>
+                        <exclude>com/pokeapi/infrastructure/persistence/entity/**</exclude>
+                        
                     </excludes>
                 </configuration>
                 <executions>
