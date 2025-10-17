@@ -2,7 +2,7 @@
 // Este archivo ha sido generado por Eclipse Implementation of JAXB v3.0.0 
 // Visite https://eclipse-ee4j.github.io/jaxb-ri 
 // Todas las modificaciones realizadas en este archivo se perderán si se vuelve a compilar el esquema de origen. 
-// Generado el: 2025.10.16 a las 12:04:38 AM CST 
+// Generado el: 2025.10.17 a las 05:36:06 AM CST 
 //
 
 
@@ -34,6 +34,14 @@ public class ObjectFactory {
      * 
      */
     public ObjectFactory() {
+    }
+
+    /**
+     * Create an instance of {@link LocationAreas }
+     * 
+     */
+    public LocationAreas createLocationAreas() {
+        return new LocationAreas();
     }
 
     /**
@@ -202,6 +210,14 @@ public class ObjectFactory {
      */
     public Item createItem() {
         return new Item();
+    }
+
+    /**
+     * Create an instance of {@link LocationAreas.LocationArea }
+     * 
+     */
+    public LocationAreas.LocationArea createLocationAreasLocationArea() {
+        return new LocationAreas.LocationArea();
     }
 
 }

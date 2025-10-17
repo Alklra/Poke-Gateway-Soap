@@ -3,6 +3,8 @@ package com.pokeapi.infrastructure.rest;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.web.client.RestTemplate;
+import com.pokeapi.domain.model.LocationAreaDto;
+
 
 import com.pokeapi.domain.model.Pokemon;
 import com.pokeapi.domain.model.HeldItem;
@@ -26,6 +28,7 @@ public class PokemonRestClient {
     private final RestTemplate restTemplate;
     private final String baseUrl;
 
+    
     public PokemonRestClient(RestTemplate restTemplate, @Value("${pokeapi.base-url:https://pokeapi.co/api/v2}") String baseUrl) {
         this.restTemplate = restTemplate;
         this.baseUrl = baseUrl;
@@ -122,5 +125,41 @@ public class PokemonRestClient {
             .heldItems(heldItems)
             .locationAreaEncounters(location)
             .build();
+    }
+
+    /**
+     * Realiza la llamada a la URL de encounters (proporcionada por el endpoint /pokemon/{name})
+     * y mapea la respuesta (array JSON) a la clase generated LocationAreas.
+     * Si la URL es vacía o nula, devuelve null.
+     */
+    public List<LocationAreaDto> fetchLocationAreas(String encountersUrl) {
+        if (encountersUrl == null || encountersUrl.isBlank()) return List.of();
+        JsonNode resp;
+        try {
+            log.info("Fetching location areas from {}", encountersUrl);
+            resp = restTemplate.getForObject(encountersUrl, JsonNode.class);
+        } catch (HttpClientErrorException.NotFound nf) {
+            log.info("Encounters endpoint not found: {}", encountersUrl);
+            return java.util.List.of();
+        } catch (Exception e) {
+            log.warn("Error calling encounters URL {}: {}", encountersUrl, e.getMessage());
+            throw new ExternalServiceException("PokeAPI", e.getMessage());
+        }
+
+        if (resp == null || !resp.isArray()) {
+            return java.util.List.of();
+        }
+
+        var out = new ArrayList<LocationAreaDto>();
+        for (var el : resp) {
+            var la = el.path("location_area");
+            if (la == null || la.isMissingNode()) continue;
+            var name = la.path("name").asText(null);
+            var url = la.path("url").asText(null);
+            if (name == null && url == null) continue;
+            out.add(new LocationAreaDto(name == null ? "" : name, url == null ? "" : url));
+        }
+        log.info("Parsed {} location areas from {}", out.size(), encountersUrl);
+        return out;
     }
 }

@@ -2,7 +2,7 @@
 // Este archivo ha sido generado por Eclipse Implementation of JAXB v3.0.0 
 // Visite https://eclipse-ee4j.github.io/jaxb-ri 
 // Todas las modificaciones realizadas en este archivo se perderán si se vuelve a compilar el esquema de origen. 
-// Generado el: 2025.10.16 a las 12:04:38 AM CST 
+// Generado el: 2025.10.17 a las 05:36:06 AM CST 
 //
 
 
@@ -25,7 +25,7 @@ import jakarta.xml.bind.annotation.XmlType;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;sequence&gt;
- *         &lt;element name="stats" type="{http://www.pokegateway.com/soap/gen}stats"/&gt;
+ *         &lt;element name="base_experience" type="{http://www.pokegateway.com/soap/gen}stats"/&gt;
  *       &lt;/sequence&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
@@ -36,36 +36,36 @@ import jakarta.xml.bind.annotation.XmlType;
  */
 @XmlAccessorType(XmlAccessType.FIELD)
 @XmlType(name = "", propOrder = {
-    "stats"
+    "baseExperience"
 })
 @XmlRootElement(name = "getStatBaseValuesResponse")
 public class GetStatBaseValuesResponse {
 
-    @XmlElement(required = true)
-    protected Stats stats;
+    @XmlElement(name = "base_experience", required = true)
+    protected Stats baseExperience;
 
     /**
-     * Obtiene el valor de la propiedad stats.
+     * Obtiene el valor de la propiedad baseExperience.
      * 
      * @return
      *     possible object is
      *     {@link Stats }
      *     
      */
-    public Stats getStats() {
-        return stats;
+    public Stats getBaseExperience() {
+        return baseExperience;
     }
 
     /**
-     * Define el valor de la propiedad stats.
+     * Define el valor de la propiedad baseExperience.
      * 
      * @param value
      *     allowed object is
      *     {@link Stats }
      *     
      */
-    public void setStats(Stats value) {
-        this.stats = value;
+    public void setBaseExperience(Stats value) {
+        this.baseExperience = value;
     }
 
 }

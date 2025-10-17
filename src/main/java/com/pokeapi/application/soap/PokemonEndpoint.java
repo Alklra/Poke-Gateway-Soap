@@ -1,8 +1,11 @@
 package com.pokeapi.application.soap;
 
-import com.pokeapi.domain.service.PokemonService;
+import com.pokeapi.application.service.PokemonService;
 import com.pokeapi.domain.model.HeldItem;
+
 import com.pokeapi.application.soap.generated.*;
+import com.pokeapi.application.soap.generated.LocationAreas.LocationArea;
+
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -87,6 +90,7 @@ public class PokemonEndpoint {
             if (request == null || request.getName() == null || request.getName().isBlank()) return null;
             GetBaseExperienceResponse response = new GetBaseExperienceResponse();
             Object be = pokemonService.getBaseExperience(request.getName());
+            log.info("Base experience for {}: {}", request.getName(), be);
             setPropertyIfPossible(response, "baseExperience", be);
             return response;
         } catch (Exception e) {
@@ -124,20 +128,19 @@ public class PokemonEndpoint {
             // Convert domain HeldItem list to generated HeldItems using streams (Java 21+ style)
             var genHeldItems = new HeldItems();
             var domainHeld = request == null ? null : pokemonService.getHeldItems(request.getName());
+            log.info("Held items for {}: {} entries - {}", request.getName(), (domainHeld == null ? 0 : domainHeld.size()), (domainHeld == null ? "[]" : domainHeld.toString()));
             if (domainHeld != null) {
-                domainHeld.stream()
-                    .map(dh -> {
-                        var gh = new com.pokeapi.application.soap.generated.HeldItem();
-                        var gi = new com.pokeapi.application.soap.generated.Item();
-                        var di = dh.getItem();
-                        if (di != null) {
-                            gi.setName(di.getName());
-                            gi.setUrl(di.getUrl());
-                        }
-                        gh.setItem(gi);
-                        return gh;
-                    })
-                    .forEach(genHeldItems.getHeldItem()::add);
+                for (var dh : domainHeld) {
+                    com.pokeapi.application.soap.generated.HeldItem gh = new com.pokeapi.application.soap.generated.HeldItem();
+                    com.pokeapi.application.soap.generated.Item gi = new com.pokeapi.application.soap.generated.Item();
+                    var di = dh.getItem();
+                    if (di != null) {
+                        gi.setName(di.getName());
+                        gi.setUrl(di.getUrl());
+                    }
+                    gh.setItem(gi);
+                    genHeldItems.getHeldItem().add(gh);
+                }
             }
             setPropertyIfPossible(response, "heldItems", genHeldItems);
             return response;
@@ -172,7 +175,19 @@ public class PokemonEndpoint {
     public GetLocationAreaEncountersResponse getLocationAreaEncounters(@RequestPayload GetLocationAreaEncountersRequest request, MessageContext messageContext) {
         try {
             GetLocationAreaEncountersResponse response = new GetLocationAreaEncountersResponse();
-            response.setLocationAreaEncounters(pokemonService.getLocationAreaEncounters(request.getName()));
+            var list = pokemonService.getLocationAreas(request.getName());
+            log.info("Location areas for {}: {} entries - {}", request.getName(), (list == null ? 0 : list.size()), (list == null ? "[]" : list.toString()));
+            // construir LocationAreas directamente usando las clases generadas
+            LocationAreas locAreas = new LocationAreas();
+            if (list != null) {
+                for (var dto : list) {
+                    LocationArea la = new LocationArea();
+                    la.setName(dto.getName());
+                    la.setUrl(dto.getUrl());
+                    locAreas.getLocationArea().add(la);
+                }
+            }
+            response.setLocationAreaEncounters(locAreas);
             return response;
         } catch (Exception e) {
             log.error("Error en getLocationAreaEncounters: {}", e.getMessage(), e);
