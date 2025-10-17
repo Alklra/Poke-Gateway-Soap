@@ -2,7 +2,7 @@
 // Este archivo ha sido generado por Eclipse Implementation of JAXB v3.0.0 
 // Visite https://eclipse-ee4j.github.io/jaxb-ri 
 // Todas las modificaciones realizadas en este archivo se perderán si se vuelve a compilar el esquema de origen. 
-// Generado el: 2025.10.16 a las 12:04:38 AM CST 
+// Generado el: 2025.10.17 a las 12:24:25 AM CST 
 //
 
 
@@ -25,7 +25,7 @@ import jakarta.xml.bind.annotation.XmlType;
  *   &lt;complexContent&gt;
  *     &lt;restriction base="{http://www.w3.org/2001/XMLSchema}anyType"&gt;
  *       &lt;sequence&gt;
- *         &lt;element name="locationAreaEncounters" type="{http://www.w3.org/2001/XMLSchema}string"/&gt;
+ *         &lt;element name="location_area_encounters" type="{http://www.pokegateway.com/soap/gen}locationAreas"/&gt;
  *       &lt;/sequence&gt;
  *     &lt;/restriction&gt;
  *   &lt;/complexContent&gt;
@@ -41,18 +41,18 @@ import jakarta.xml.bind.annotation.XmlType;
 @XmlRootElement(name = "getLocationAreaEncountersResponse")
 public class GetLocationAreaEncountersResponse {
 
-    @XmlElement(required = true)
-    protected String locationAreaEncounters;
+    @XmlElement(name = "location_area_encounters", required = true)
+    protected LocationAreas locationAreaEncounters;
 
     /**
      * Obtiene el valor de la propiedad locationAreaEncounters.
      * 
      * @return
      *     possible object is
-     *     {@link String }
+     *     {@link LocationAreas }
      *     
      */
-    public String getLocationAreaEncounters() {
+    public LocationAreas getLocationAreaEncounters() {
         return locationAreaEncounters;
     }
 
@@ -61,10 +61,10 @@ public class GetLocationAreaEncountersResponse {
      * 
      * @param value
      *     allowed object is
-     *     {@link String }
+     *     {@link LocationAreas }
      *     
      */
-    public void setLocationAreaEncounters(String value) {
+    public void setLocationAreaEncounters(LocationAreas value) {
         this.locationAreaEncounters = value;
     }
 

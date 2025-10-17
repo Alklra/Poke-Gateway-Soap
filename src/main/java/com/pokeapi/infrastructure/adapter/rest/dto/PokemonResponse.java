@@ -2,14 +2,18 @@ package com.pokeapi.infrastructure.adapter.rest.dto;
 
 import java.util.List;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class PokemonResponse {
     private Integer id;
     private String name;
+    @JsonProperty("base_experience")
     private Integer baseExperience;
     private List<AbilityWrapper> abilities;
+    @JsonProperty("held_items")
     private List<HeldItemWrapper> heldItems;
+    @JsonProperty("location_area_encounters")
     private String locationAreaEncounters;
 
     // Getters and Setters

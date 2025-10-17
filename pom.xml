@@ -12,7 +12,7 @@
 
     <groupId>com.pokegateway</groupId>
     <artifactId>poke-soap-gateway</artifactId>
-    <version>1.2.7</version>
+    <version>1.2.3</version>
     <name>poke-soap-gateway</name>
     <description>SOAP Gateway para consumir la PokeAPI con Resiliencia y Caching</description>
 
