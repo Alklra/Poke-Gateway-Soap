@@ -5,13 +5,16 @@
 Este archivo ha sido generado por Eclipse Implementation of JAXB v3.0.0 
 Visite https://eclipse-ee4j.github.io/jaxb-ri 
 Todas las modificaciones realizadas en este archivo se perderán si se vuelve a compilar el esquema de origen. 
-Generado el: 2025.10.11 a las 09:04:20 PM CST 
+Generado el: 2025.10.17 a las 09:20:04 AM CST 
 
   -->
-  <bindings scd="x-schema::tns" xmlns:tns="http://pokeapi.com/soap">
+  <bindings scd="x-schema::tns" xmlns:tns="http://www.pokegateway.com/soap/gen">
     <schemaBindings map="false">
       <package name="com.pokeapi.application.soap.generated"/>
     </schemaBindings>
+    <bindings scd="~tns:locationAreas">
+      <class ref="com.pokeapi.application.soap.generated.LocationAreas"/>
+    </bindings>
     <bindings scd="tns:getIdRequest">
       <class ref="com.pokeapi.application.soap.generated.GetIdRequest"/>
     </bindings>
@@ -42,12 +45,38 @@ Generado el: 2025.10.11 a las 09:04:20 PM CST
     <bindings scd="tns:getAbilityNamesResponse">
       <class ref="com.pokeapi.application.soap.generated.GetAbilityNamesResponse"/>
     </bindings>
+    <bindings scd="~tns:abilities">
+      <class ref="com.pokeapi.application.soap.generated.Abilities"/>
+    </bindings>
     <bindings scd="tns:getStatBaseValuesRequest">
       <class ref="com.pokeapi.application.soap.generated.GetStatBaseValuesRequest"/>
     </bindings>
     <bindings scd="tns:getStatBaseValuesResponse">
       <class ref="com.pokeapi.application.soap.generated.GetStatBaseValuesResponse"/>
     </bindings>
+    <bindings scd="~tns:stats">
+      <class ref="com.pokeapi.application.soap.generated.Stats"/>
+    </bindings>
+    <bindings scd="tns:getHeldItemsRequest">
+      <class ref="com.pokeapi.application.soap.generated.GetHeldItemsRequest"/>
+    </bindings>
+    <bindings scd="tns:getHeldItemsResponse">
+      <class ref="com.pokeapi.application.soap.generated.GetHeldItemsResponse"/>
+    </bindings>
+    <bindings scd="~tns:heldItems">
+      <class ref="com.pokeapi.application.soap.generated.HeldItems"/>
+    </bindings>
+    <bindings scd="tns:getLocationAreaEncountersRequest">
+      <class ref="com.pokeapi.application.soap.generated.GetLocationAreaEncountersRequest"/>
+    </bindings>
+    <bindings scd="tns:getLocationAreaEncountersResponse">
+      <class ref="com.pokeapi.application.soap.generated.GetLocationAreaEncountersResponse"/>
+    </bindings>
+    <bindings scd="~tns:heldItem">
+      <class ref="com.pokeapi.application.soap.generated.HeldItem"/>
+    </bindings>
+    <bindings scd="~tns:item">
+      <class ref="com.pokeapi.application.soap.generated.Item"/>
+    </bindings>
   </bindings>
 </bindings>
-
