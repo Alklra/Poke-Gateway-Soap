@@ -1,4 +1,3 @@
-
 package com.pokeapi.application.soap;
 
 import static org.junit.jupiter.api.Assertions.*;
