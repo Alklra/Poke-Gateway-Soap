@@ -3,6 +3,7 @@ package com.pokeapi.infrastructure.aspect;
 import com.pokeapi.infrastructure.persistence.entity.RequestLog;
 import com.pokeapi.infrastructure.persistence.repository.RequestLogRepository;
 import org.aspectj.lang.ProceedingJoinPoint;
+import org.aspectj.lang.Signature;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
 import org.springframework.stereotype.Component;
@@ -25,29 +26,40 @@ public class LoggingAspect {
 
     @Around("@within(org.springframework.ws.server.endpoint.annotation.Endpoint)")
     public Object logMethod(ProceedingJoinPoint joinPoint) throws Throwable {
-        String methodName = joinPoint.getSignature().getName();
+        Signature sig = joinPoint.getSignature();
+        String methodName = (sig != null) ? sig.getName() : "unknown";
         String ipAddress = getClientIp();
         RequestLog log = new RequestLog(ipAddress, methodName);
-        
-        // Capturar request si está disponible
-        if (joinPoint.getArgs().length > 0) {
-            log.setRequest(joinPoint.getArgs()[0].toString());
+
+        // Capturar request si está disponible y no nulo
+        Object[] args = joinPoint.getArgs();
+        if (args != null && args.length > 0 && args[0] != null) {
+            log.setRequest(args[0].toString());
         }
-        
+
         long startTime = System.currentTimeMillis();
         try {
             Object result = joinPoint.proceed();
-            
+
             log.setDuration(System.currentTimeMillis() - startTime);
-            log.setResponse(result.toString());
-            
+            log.setResponse(result != null ? result.toString() : "null");
+
             requestLogRepository.save(log);
             return result;
-        } catch (Exception e) {
-            log.setResponse("Error: " + e.getMessage());
+        } catch (Throwable t) {
+            // Guardar info del error y re-lanzar
+            log.setResponse("Error: " + (t == null ? "null" : t.getMessage()));
             log.setDuration(System.currentTimeMillis() - startTime);
             requestLogRepository.save(log);
-            throw e;
+            // Si es un Error o unchecked, rethrow preserving type
+            if (t instanceof RuntimeException) {
+                throw (RuntimeException) t;
+            }
+            if (t instanceof Error) {
+                throw (Error) t;
+            }
+            // checked Throwable -> wrap or rethrow as Throwable (method signature allows it)
+            throw t;
         }
     }
     
