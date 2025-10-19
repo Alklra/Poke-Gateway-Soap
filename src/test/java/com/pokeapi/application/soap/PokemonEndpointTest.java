@@ -3,10 +3,17 @@ package com.pokeapi.application.soap;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-import com.pokeapi.application.soap.generated.GetIdRequest;
-import com.pokeapi.application.soap.generated.GetIdResponse;
+import com.pokeapi.application.soap.generated.*;
 import com.pokeapi.domain.exception.PokemonNotFoundException;
 import com.pokeapi.application.service.PokemonService;
+import com.pokeapi.domain.exception.ExternalServiceException;
+import com.pokeapi.domain.model.HeldItem;
+import com.pokeapi.domain.model.Item;
+import java.lang.reflect.Method;
+import org.springframework.ws.WebServiceMessage;
+import com.pokeapi.domain.model.LocationAreaDto;
+
+import java.util.List;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.mockito.Mock;
@@ -85,7 +92,7 @@ class PokemonEndpointTest {
     void getIdExternalServiceProducesNull_unit() {
         var req = new GetIdRequest();
         req.setName("err");
-        when(service.getId("err")).thenThrow(new com.pokeapi.domain.exception.ExternalServiceException("pokeapi","down"));
+        when(service.getId("err")).thenThrow(new ExternalServiceException("pokeapi","down"));
 
         var resp = endpoint.getId(req, messageContext);
         assertNull(resp);
@@ -96,11 +103,11 @@ class PokemonEndpointTest {
     // from PokemonEndpointHeldItemsTest
     @Test
     void getHeldItemsMapsCorrectly_combined() {
-        com.pokeapi.domain.model.Item item = com.pokeapi.domain.model.Item.builder().name("i").url("u").build();
-        com.pokeapi.domain.model.HeldItem hi = com.pokeapi.domain.model.HeldItem.builder().item(item).build();
-        when(service.getHeldItems("bulbasaur")).thenReturn(java.util.List.of(hi));
+        Item item = Item.builder().name("i").url("u").build();
+        HeldItem hi = HeldItem.builder().item(item).build();
+        when(service.getHeldItems("bulbasaur")).thenReturn(List.of(hi));
 
-        var req = new com.pokeapi.application.soap.generated.GetHeldItemsRequest();
+        var req = new GetHeldItemsRequest();
         req.setName("bulbasaur");
 
     var resp = endpoint.getHeldItems(req, null);
@@ -121,7 +128,7 @@ class PokemonEndpointTest {
     // Use TestMessageContext with real SaajSoapMessage as response
     TestMessageContext dmc = new TestMessageContext(ssm);
 
-        when(service.getId("missing")).thenThrow(new com.pokeapi.domain.exception.PokemonNotFoundException("missing"));
+        when(service.getId("missing")).thenThrow(new PokemonNotFoundException("missing"));
         var req = new GetIdRequest();
         req.setName("missing");
         var resp = endpoint.getId(req, dmc);
@@ -135,7 +142,7 @@ class PokemonEndpointTest {
     @Test
     void getNameHappy() {
         when(service.getName("x")).thenReturn("XNAME");
-        var req = new com.pokeapi.application.soap.generated.GetNameRequest();
+        var req = new GetNameRequest();
         req.setName("x");
         var resp = endpoint.getName(req, null);
         assertNotNull(resp);
@@ -143,8 +150,8 @@ class PokemonEndpointTest {
 
     @Test
     void getNameNotFound() {
-        when(service.getName("m")).thenThrow(new com.pokeapi.domain.exception.PokemonNotFoundException("m"));
-        var req = new com.pokeapi.application.soap.generated.GetNameRequest();
+        when(service.getName("m")).thenThrow(new PokemonNotFoundException("m"));
+        var req = new GetNameRequest();
         req.setName("m");
         var resp = endpoint.getName(req, null);
         assertNull(resp);
@@ -153,7 +160,7 @@ class PokemonEndpointTest {
     @Test
     void getBaseExperienceHappy() {
         when(service.getBaseExperience("b")).thenReturn(12);
-        var req = new com.pokeapi.application.soap.generated.GetBaseExperienceRequest();
+        var req = new GetBaseExperienceRequest();
         req.setName("b");
         var resp = endpoint.getBaseExperience(req, null);
         assertNotNull(resp);
@@ -161,8 +168,8 @@ class PokemonEndpointTest {
 
     @Test
     void getBaseExperienceNotFound() {
-        when(service.getBaseExperience("n")).thenThrow(new com.pokeapi.domain.exception.PokemonNotFoundException("n"));
-        var req = new com.pokeapi.application.soap.generated.GetBaseExperienceRequest();
+        when(service.getBaseExperience("n")).thenThrow(new PokemonNotFoundException("n"));
+        var req = new GetBaseExperienceRequest();
         req.setName("n");
         var resp = endpoint.getBaseExperience(req, null);
         assertNull(resp);
@@ -170,8 +177,8 @@ class PokemonEndpointTest {
 
     @Test
     void getAbilityNamesHappy() {
-        when(service.getAbilities("a")).thenReturn(java.util.List.of("one","two"));
-        var req = new com.pokeapi.application.soap.generated.GetAbilityNamesRequest();
+        when(service.getAbilities("a")).thenReturn(List.of("one","two"));
+        var req = new GetAbilityNamesRequest();
         req.setName("a");
     var resp = endpoint.getAbilityNames(req, null);
     assertNotNull(resp);
@@ -181,8 +188,8 @@ class PokemonEndpointTest {
 
     @Test
     void getAbilityNamesEmpty() {
-        when(service.getAbilities("e")).thenReturn(java.util.List.of());
-        var req = new com.pokeapi.application.soap.generated.GetAbilityNamesRequest();
+        when(service.getAbilities("e")).thenReturn(List.of());
+        var req = new GetAbilityNamesRequest();
         req.setName("e");
     var resp = endpoint.getAbilityNames(req, null);
     assertNotNull(resp);
@@ -190,17 +197,19 @@ class PokemonEndpointTest {
 
     @Test
     void getLocationAreaEncountersHappy() {
-        when(service.getLocationAreaEncounters("l")).thenReturn("/loc");
-        var req = new com.pokeapi.application.soap.generated.GetLocationAreaEncountersRequest();
+        when(service.getLocationAreas("l")).thenReturn(List.of(new LocationAreaDto("locname","http://loc")));
+        var req = new GetLocationAreaEncountersRequest();
         req.setName("l");
         var resp = endpoint.getLocationAreaEncounters(req, null);
         assertNotNull(resp);
+        assertNotNull(resp.getLocationAreaEncounters());
+        assertEquals(1, resp.getLocationAreaEncounters().getLocationArea().size());
     }
 
     @Test
     void getLocationAreaEncountersNotFound() {
-        when(service.getLocationAreaEncounters("nf")).thenThrow(new com.pokeapi.domain.exception.PokemonNotFoundException("nf"));
-        var req = new com.pokeapi.application.soap.generated.GetLocationAreaEncountersRequest();
+        when(service.getLocationAreas("nf")).thenThrow(new PokemonNotFoundException("nf"));
+        var req = new GetLocationAreaEncountersRequest();
         req.setName("nf");
         var resp = endpoint.getLocationAreaEncounters(req, null);
         assertNull(resp);
@@ -209,7 +218,7 @@ class PokemonEndpointTest {
     @Test
     void getHeldItemsEmptyWhenServiceReturnsNull() {
         when(service.getHeldItems("z")).thenReturn(null);
-        var req = new com.pokeapi.application.soap.generated.GetHeldItemsRequest();
+        var req = new GetHeldItemsRequest();
         req.setName("z");
         var resp = endpoint.getHeldItems(req, null);
         assertNotNull(resp);
@@ -217,7 +226,7 @@ class PokemonEndpointTest {
 
     @Test
     void endpointHandlesNullNameGracefully() {
-        var req = new com.pokeapi.application.soap.generated.GetIdRequest();
+        var req = new GetIdRequest();
         req.setName(null);
         var resp = endpoint.getId(req, null);
         assertNull(resp);
@@ -225,7 +234,7 @@ class PokemonEndpointTest {
 
     @Test
     void endpointHandlesEmptyNameGracefully() {
-        var req = new com.pokeapi.application.soap.generated.GetIdRequest();
+        var req = new GetIdRequest();
         req.setName("");
         var resp = endpoint.getId(req, null);
         assertNull(resp);
@@ -237,29 +246,58 @@ class PokemonEndpointTest {
         SOAPMessage sm = mf.createMessage();
         SaajSoapMessage ssm = new SaajSoapMessage(sm);
     TestMessageContext dmc = new TestMessageContext(ssm);
-        when(service.getId("err")).thenThrow(new com.pokeapi.domain.exception.ExternalServiceException("poke","down"));
+        when(service.getId("err")).thenThrow(new ExternalServiceException("poke","down"));
         var req = new GetIdRequest(); req.setName("err");
         var resp = endpoint.getId(req, dmc);
         assertNull(resp);
         assertTrue(ssm.getSaajMessage().getSOAPBody().hasFault());
     }
 
+    @Test
+    void buildSoapFaultHandlesNonSaajResponse() {
+        // return a response object that is not SaajSoapMessage
+        MessageContext mc = mock(MessageContext.class);
+        WebServiceMessage fakeResponse = mock(WebServiceMessage.class);
+        when(mc.getResponse()).thenReturn(fakeResponse);
+        when(service.getId("err2")).thenThrow(new ExternalServiceException("poke","down"));
+        var req = new GetIdRequest(); req.setName("err2");
+        var resp = endpoint.getId(req, mc);
+        assertNull(resp);
+        // nothing to assert on fake response, but code path executed
+    }
+
     // New tests to increase coverage (edge cases and null handling)
     @Test
     void getHeldItemsHandlesNullItemInDomain() {
-        com.pokeapi.domain.model.HeldItem hi = com.pokeapi.domain.model.HeldItem.builder().item(null).build();
-        when(service.getHeldItems("b")).thenReturn(java.util.List.of(hi));
-        var req = new com.pokeapi.application.soap.generated.GetHeldItemsRequest();
+        HeldItem hi = HeldItem.builder().item(null).build();
+        when(service.getHeldItems("b")).thenReturn(List.of(hi));
+        var req = new GetHeldItemsRequest();
         req.setName("b");
         var resp = endpoint.getHeldItems(req, null);
         assertNotNull(resp);
         assertNotNull(resp.getHeldItems());
     }
 
+    // Tests moved from the private helper test file per request
+    @Test
+    void setPropertyIfPossibleHandlesMissingFieldAndPrimitive() throws Exception {
+        var endpoint = new PokemonEndpoint(null);
+        Method m = PokemonEndpoint.class.getDeclaredMethod("setPropertyIfPossible", Object.class, String.class, Object.class);
+        m.setAccessible(true);
+
+        Object target = new Object();
+        assertDoesNotThrow(() -> m.invoke(endpoint, target, "nonexistent", "value"));
+
+        class Holder { public int x = 5; }
+        Holder h = new Holder();
+        assertDoesNotThrow(() -> m.invoke(endpoint, h, "x", null));
+        assertEquals(5, h.x);
+    }
+
     @Test
     void getAbilityNamesHandlesNullList() {
         when(service.getAbilities("a")).thenReturn(null);
-        var req = new com.pokeapi.application.soap.generated.GetAbilityNamesRequest();
+        var req = new GetAbilityNamesRequest();
         req.setName("a");
         var resp = endpoint.getAbilityNames(req, null);
         assertNotNull(resp);
@@ -267,19 +305,20 @@ class PokemonEndpointTest {
 
     @Test
     void getLocationAreaEncountersHandlesEmptyString() {
-        when(service.getLocationAreaEncounters("")).thenReturn("");
-        var req = new com.pokeapi.application.soap.generated.GetLocationAreaEncountersRequest();
+        when(service.getLocationAreas("")).thenReturn(List.of());
+        var req = new GetLocationAreaEncountersRequest();
         req.setName("");
         var resp = endpoint.getLocationAreaEncounters(req, null);
         assertNotNull(resp);
-        assertEquals("", resp.getLocationAreaEncounters());
+        assertNotNull(resp.getLocationAreaEncounters());
+        assertEquals(0, resp.getLocationAreaEncounters().getLocationArea().size());
     }
 
     // --- new small mock tests (increase coverage) ---
     @Test
     void getNameHandlesServiceNull() {
         when(service.getName("n")).thenReturn(null);
-        var req = new com.pokeapi.application.soap.generated.GetNameRequest(); req.setName("n");
+        var req = new GetNameRequest(); req.setName("n");
         var resp = endpoint.getName(req, null);
         assertNotNull(resp);
         assertNull(resp.getName());
@@ -288,7 +327,7 @@ class PokemonEndpointTest {
     @Test
     void getBaseExperienceZero() {
         when(service.getBaseExperience("p")).thenReturn(0);
-        var req = new com.pokeapi.application.soap.generated.GetBaseExperienceRequest(); req.setName("p");
+        var req = new GetBaseExperienceRequest(); req.setName("p");
         var resp = endpoint.getBaseExperience(req, null);
         assertNotNull(resp);
         assertEquals(0, resp.getBaseExperience());
@@ -296,8 +335,8 @@ class PokemonEndpointTest {
 
     @Test
     void getAbilityNamesHandlesSingle() {
-        when(service.getAbilities("s")).thenReturn(java.util.List.of("only"));
-        var req = new com.pokeapi.application.soap.generated.GetAbilityNamesRequest(); req.setName("s");
+        when(service.getAbilities("s")).thenReturn(List.of("only"));
+        var req = new GetAbilityNamesRequest(); req.setName("s");
     var resp = endpoint.getAbilityNames(req, null);
     assertNotNull(resp);
     assertNotNull(resp.getAbilities());
@@ -306,8 +345,8 @@ class PokemonEndpointTest {
 
     @Test
     void getHeldItemsHandlesEmptyDomainList() {
-        when(service.getHeldItems("x")).thenReturn(java.util.List.of());
-        var req = new com.pokeapi.application.soap.generated.GetHeldItemsRequest(); req.setName("x");
+        when(service.getHeldItems("x")).thenReturn(List.of());
+        var req = new GetHeldItemsRequest(); req.setName("x");
     var resp = endpoint.getHeldItems(req, null);
     assertNotNull(resp);
     assertNotNull(resp.getHeldItems());

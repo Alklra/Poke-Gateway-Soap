@@ -1,14 +1,12 @@
 package com.pokeapi.application.service;
 
-import org.springframework.stereotype.Service;
 import com.pokeapi.domain.model.Pokemon;
 import com.pokeapi.domain.model.HeldItem;
+import com.pokeapi.domain.model.LocationAreaDto;
 import com.pokeapi.domain.port.PokemonRepository;
 import com.pokeapi.infrastructure.rest.PokemonRestClient;
-import com.pokeapi.domain.model.LocationAreaDto;  
-
+import org.springframework.stereotype.Service;
 import org.springframework.beans.factory.annotation.Autowired;
-
 
 import java.util.List;
 import java.util.Collections;

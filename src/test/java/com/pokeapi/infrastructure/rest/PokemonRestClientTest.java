@@ -59,7 +59,7 @@ class PokemonRestClientTest {
         }
         PokemonRestClient client = new PokemonRestClient(restTemplate, "https://pokeapi.co/api/v2");
         // mock restTemplate to return the node
-        when(restTemplate.getForObject(anyString(), eq(com.fasterxml.jackson.databind.JsonNode.class))).thenReturn(node);
+        when(restTemplate.getForObject(anyString(), eq(JsonNode.class))).thenReturn(node);
         var p = client.getPokemonByName("test");
         assertNotNull(p);
     }
@@ -67,7 +67,7 @@ class PokemonRestClientTest {
     @Test
     void clientHandlesMalformedJsonGracefully() {
         PokemonRestClient client = new PokemonRestClient(restTemplate, "https://pokeapi.co/api/v2");
-        when(restTemplate.getForObject(anyString(), eq(com.fasterxml.jackson.databind.JsonNode.class))).thenReturn(null);
+        when(restTemplate.getForObject(anyString(), eq(JsonNode.class))).thenReturn(null);
         assertThrows(ExternalServiceException.class, () -> client.getPokemonByName("x"));
     }
 
@@ -81,7 +81,7 @@ class PokemonRestClientTest {
         } catch (Exception ex) {
             fail("Error building test JSON: " + ex.getMessage());
         }
-        when(restTemplate.getForObject(anyString(), eq(com.fasterxml.jackson.databind.JsonNode.class))).thenReturn(node);
+        when(restTemplate.getForObject(anyString(), eq(JsonNode.class))).thenReturn(node);
         var p = client.getPokemonByName("simple");
         assertNotNull(p);
     }

@@ -140,14 +140,14 @@ public class PokemonRestClient {
             resp = restTemplate.getForObject(encountersUrl, JsonNode.class);
         } catch (HttpClientErrorException.NotFound nf) {
             log.info("Encounters endpoint not found: {}", encountersUrl);
-            return java.util.List.of();
+            return List.of();
         } catch (Exception e) {
             log.warn("Error calling encounters URL {}: {}", encountersUrl, e.getMessage());
             throw new ExternalServiceException("PokeAPI", e.getMessage());
         }
 
         if (resp == null || !resp.isArray()) {
-            return java.util.List.of();
+            return List.of();
         }
 
         var out = new ArrayList<LocationAreaDto>();
